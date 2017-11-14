@@ -5,15 +5,18 @@ console.log("avl tree");
  *
  * Reference: https://en.wikipedia.org/wiki/AVL_tree
  */
-var AvlNode = function(value) {
-  /** The value that this node stores */
-  this.value = value;
+class AvlNode {
+  constructor(value) {
+    /** The value that this node stores */
+    this.value = value;
 
-  /** The node's left child */
-  this.leftChild = null;
+    /** The node's left child */
+    this.leftChild = null;
 
-  /** The node's right child */
-  this.rightChild = null;
+    /** The node's right child */
+    this.rightChild = null;
+  }
+  
 
   ////////////////////////////////////////////////
   // Private methods
@@ -23,7 +26,7 @@ var AvlNode = function(value) {
    * Rebalances this node.
    * If the node is already balanced, does nothing.
    */ 
-  this.rebalance = function() {
+  rebalance() {
     // TODO
   }
 
@@ -31,7 +34,7 @@ var AvlNode = function(value) {
    * Get the height of this node's left child.
    * If this node has no left child, returns 0.
    */
-  this.getLeftChildHeight = function() {
+  getLeftChildHeight() {
     if (!this.leftChild) {
       return 0;
     }
@@ -42,7 +45,7 @@ var AvlNode = function(value) {
    * Get the height of this node's right child.
    * If this node has no right child, returns 0.
    */
-  this.getRightChildHeight = function() {
+  getRightChildHeight() {
     if (!this.rightChild) {
       return 0;
     }
@@ -56,22 +59,25 @@ var AvlNode = function(value) {
   /**
    * Set this node's right child.
    */
-  this.setLeftChild = function(/* AvlNode */ child) {
+  setLeftChild(/* AvlNode */ child) {
     this.leftChild = child;
   }
 
   /**
    * Set this node's right child.
    */
-  this.setRightChild = function(/* AvlNode */ child) {
+  setRightChild(/* AvlNode */ child) {
     this.rightChild = child;
   }
+
+  // TODO: Need to store height as an attribute,
+  //   otherwise will take O(n) time to get height
 
   /**
    * Returns the height of the subtree rooted at
    *   this node.
    */
-  this.getHeight = function() {
+  getHeight() {
     return Math.max(this.getLeftChildHeight(),
                     this.getRightChildHeight())
            + 1;
@@ -82,14 +88,14 @@ var AvlNode = function(value) {
    * AVL invariant requires that the balance
    * factor is -1, 0, or 1.
    */
-  this.getBalanceFactor = function() {
+  getBalanceFactor() {
     return this.getLeftChildHeight() - this.getRightChildHeight();
   }
 
   /**
    * Insert the given node into this node's subtree.
    */
-  this.insert = function(/* AvlNode */ node) {
+  insert(/* AvlNode */ node) {
     // TODO
 
     this.rebalance();
@@ -100,7 +106,7 @@ var AvlNode = function(value) {
    * Returns true if the node was in this node's
    *   subtree and false otherwise.
    */
-  this.delete = function(/* AvlNode */ node) {
+  delete(/* AvlNode */ node) {
     // TODO
 
     this.rebalance();
