@@ -19,7 +19,7 @@ class AvlNode {
   
 
   ////////////////////////////////////////////////
-  // Private methods
+  // Helper methods
   //
 
   /**
