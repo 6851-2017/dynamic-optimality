@@ -111,6 +111,23 @@ class AvlNode {
 
     this.rebalance();
   }
+
+  /**
+   * Search for the given value in this node's subtree.
+   * Returns the AvlNode that contains that value.
+   * Returns null if the value is not in this subtree.
+   */
+  search(value) {
+    if (this.value == value) {
+      return this;
+    } else if (value < this.value && this.leftChild) {
+      return this.leftChild.search(value);
+    } else if (value > this.value && this.rightChild) {
+      return this.rightChild.search(value);
+    } else {
+      return null;
+    }
+  }
 }
 
 // Demonstrate basic functions
@@ -130,6 +147,13 @@ console.log(rootNode.getHeight()); // 3
 console.log(rootNode.getBalanceFactor()); // 1
 
 
+// Demonstrate search
+console.log(rootNode.search(5));
+console.log(rootNode.search(7));
+console.log(rootNode.search(3));
+console.log(rootNode.search(25));
+console.log(rootNode.search(40));
+console.log(rootNode.search(-2));
 
 //////////////////////////////////////
 
