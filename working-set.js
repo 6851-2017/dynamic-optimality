@@ -223,11 +223,39 @@ class WorkingSetStructure {
   }
 
   /**
-   * Search for value in the structure.
+   * Search for value in the structure and returns that value.
    * Returns null if the value isn't in the structure.
    */ 
   search(value) {
+    // Go through trees and search for value
+    var j = null;
+    var node = null;
+    for (var i = 0; i < this.trees.length; i++) {
+      var foundNode = this.trees[i].search(value);
+      if (foundNode) {
+        j = i;
+        node = foundNode;
+        break;
+      }
+    }
 
+    if (!j) {
+      // value is not in the tree
+      return null;
+    }
+
+    // Delete value from T_j
+    this.trees[j].delete(node);
+    // TODO: Delete it from deque j
+
+    // Insert value into T_1
+    this.trees[j].insert(node);
+    this.deques[j].enqueue(value);
+
+    // Shift 1 -> j
+    this.shift(1, j);
+
+    return value;
   }
 }
 
