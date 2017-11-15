@@ -32,34 +32,27 @@ class AvlNode {
    */ 
   rebalance() {
     // Rebalance only while |balance factor| is not <= 1:
-    while (!(abs(this.getBalanceFactor()) <= 1)) {
+    var factor = this.getBalanceFactor();
+    if (!(Math.abs(factor) <= 1)) {
       // R and LR rotations
-      if (this.getBalanceFactor() > 1) {
-        var heightA = this.leftChild.leftChild.height
-        var heightB = this.leftChild.rightChild.height
-        var heightC = this.rightChild.height
+      if (factor > 1) {
+        var heightA = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
+        var heightB = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.height : 0;
+        var heightC = (this.rightChild != null) ? this.rightChild.height : 0;
         // R:
-        if (heightA >= heightB && heightB >= heightC) {
-          this.rotateR()
-        }
+        if (heightA >= heightB && heightB >= heightC) { this.rotateR(); }
         // LR: 
-        else if (heightB >= heightA && heightA >= heightC) {
-          this.rotateLR()
-        }
+        else if (heightB >= heightA && heightA >= heightC) { this.rotateLR(); }
       }
       // L and RL rotations
-      else if (this.getBalanceFactor() < -1) {
-        var heightA = this.rightChild.rightChild.height
-        var heightB = this.rightChild.leftChild.height
-        var heightC = this.leftChild.height
+      else if (factor < -1) {
+        var heightA = (this.rightChild.rightChild != null) ? this.rightChild.rightChild.height : 0;
+        var heightB = (this.rightChild.leftChild != null) ? this.rightChild.leftChild.height : 0;
+        var heightC = (this.leftChild != null) ? this.leftChild.height : 0;
         // L:
-        if (heightA >= heightB && heightB >= heightC) {
-          this.rotateL()
-        }
+        if (heightA >= heightB && heightB >= heightC) { this.rotateL(); }
         // RL: 
-        else if (heightB >= heightA && heightA >= heightC) {
-          this.rotateRL()
-        }
+        else if (heightB >= heightA && heightA >= heightC) { this.rotateRL(); }
       }
     }
   }
@@ -70,47 +63,71 @@ class AvlNode {
 
   rotateR() {
     // rotation
-    var temp = this
-    this = temp.leftChild
-    temp.leftChild = this.rightChild
-    this.rightChild = temp
+    var temp = this.copy();
+    this.updateRoot(temp.leftChild);
+    temp.leftChild = this.rightChild;
+    this.rightChild = temp;
     // update parents
-    this.parent = null
-    this.rightChild.parent = this
-    this.rightChild.leftChild.parent = rightChild
-    this.updateHeights()
+    this.rightChild.parent = this;
+    if (this.rightChild.leftChild != null) {
+      this.rightChild.leftChild.parent = this.rightChild;
+    }
+    this.updateHeights();
   }
 
   rotateL() {
     // rotation
-    var temp = this
-    this = temp.rightChild
-    temp.rightChild = this.leftChild
-    this.leftChild = temp
+    var temp = this.copy();
+    this.updateRoot(temp.rightChild);
+    temp.rightChild = this.leftChild;
+    this.leftChild = temp;
     // update parents
-    this.parent = null
-    this.leftChild.parent = this
-    this.leftChild.rightChild.parent = leftChild
-    this.updateHeights()
+    this.leftChild.parent = this;
+    if (this.leftChild.rightChild != null) {
+      this.leftChild.rightChild.parent = this.leftChild;
+    }
+    this.updateHeights();
   }
 
   rotateLR() {
-    this.leftChild.rotateL()
-    this.leftChild = this.leftChild.parent
-    this.leftChild.parent = this
-    this.rotateR()
+    this.leftChild.rotateL();
+    if (this.leftChild != null) {
+      this.leftChild.parent = this;
+    }
+    this.rotateR();
   }
 
   rotateRL() {
-    this.rightChild.rotateR()
-    this.rightChild = this.rightChild.parent
-    this.rightChild.parent = this
-    this.rotateL()
+    this.rightChild.rotateR();
+    if (this.rightChild != null) {
+      this.rightChild.parent = this;
+    }
+    this.rotateL();
+  }
+
+  updateRoot(newRoot) {
+    this.value = newRoot.value;
+    this.leftChild = newRoot.leftChild;
+    this.rightChild = newRoot.rightChild;
+    this.height = Math.max(this.height, newRoot.height);
+    this.parent = null;
   }
 
   ////////////////////////////////////////////////
   // Public methods
   //
+
+  /**
+   * Make a copy of node. Returns copy.
+   */
+  copy() {
+    var newNode = new AvlNode(this.value);
+    newNode.leftChild = this.leftChild;
+    newNode.rightChild = this.rightChild;
+    newNode.height = this.height;
+    newNode.parent = this.parent;
+    return newNode;
+  }
   
   /**
    * Returns the balance factor of this node.
