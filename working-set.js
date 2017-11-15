@@ -31,7 +31,81 @@ class AvlNode {
    * If the node is already balanced, does nothing.
    */ 
   rebalance() {
-    // TODO
+    // Rebalance only while |balance factor| is not <= 1:
+    while (!(abs(this.getBalanceFactor()) <= 1)) {
+      // R and LR rotations
+      if (this.getBalanceFactor() > 1) {
+        var heightA = this.leftChild.leftChild.height
+        var heightB = this.leftChild.rightChild.height
+        var heightC = this.rightChild.height
+        // R:
+        if (heightA >= heightB && heightB >= heightC) {
+          this.rotateR()
+        }
+        // LR: 
+        else if (heightB >= heightA && heightA >= heightC) {
+          this.rotateLR()
+        }
+      }
+      // L and RL rotations
+      else if (this.getBalanceFactor() < -1) {
+        var heightA = this.rightChild.rightChild.height
+        var heightB = this.rightChild.leftChild.height
+        var heightC = this.leftChild.height
+        // L:
+        if (heightA >= heightB && heightB >= heightC) {
+          this.rotateL()
+        }
+        // RL: 
+        else if (heightB >= heightA && heightA >= heightC) {
+          this.rotateRL()
+        }
+      }
+    }
+  }
+
+  /**
+   * Helper functions (rotations) for rebalancing.
+   */ 
+
+  rotateR() {
+    // rotation
+    var temp = this
+    this = temp.leftChild
+    temp.leftChild = this.rightChild
+    this.rightChild = temp
+    // update parents
+    this.parent = null
+    this.rightChild.parent = this
+    this.rightChild.leftChild.parent = rightChild
+    this.updateHeights()
+  }
+
+  rotateL() {
+    // rotation
+    var temp = this
+    this = temp.rightChild
+    temp.rightChild = this.leftChild
+    this.leftChild = temp
+    // update parents
+    this.parent = null
+    this.leftChild.parent = this
+    this.leftChild.rightChild.parent = leftChild
+    this.updateHeights()
+  }
+
+  rotateLR() {
+    this.leftChild.rotateL()
+    this.leftChild = this.leftChild.parent
+    this.leftChild.parent = this
+    this.rotateR()
+  }
+
+  rotateRL() {
+    this.rightChild.rotateR()
+    this.rightChild = this.rightChild.parent
+    this.rightChild.parent = this
+    this.rotateL()
   }
 
   ////////////////////////////////////////////////
