@@ -15,6 +15,9 @@ var AvlNode = function(value) {
   /** The node's right child */
   this.rightChild = null;
 
+  /** The node's height */
+  this.height = 1
+
   ////////////////////////////////////////////////
   // Private methods
   //
@@ -27,63 +30,40 @@ var AvlNode = function(value) {
     // TODO
   }
 
-  /**
-   * Get the height of this node's left child.
-   * If this node has no left child, returns 0.
-   */
-  this.getLeftChildHeight = function() {
-    if (!this.leftChild) {
-      return 0;
-    }
-    return this.leftChild.getHeight();
-  }
-
-  /**
-   * Get the height of this node's right child.
-   * If this node has no right child, returns 0.
-   */
-  this.getRightChildHeight = function() {
-    if (!this.rightChild) {
-      return 0;
-    }
-    return this.rightChild.getHeight();
-  }
-
   ////////////////////////////////////////////////
   // Public methods
   //
 
-  /**
-   * Set this node's right child.
-   */
-  this.setLeftChild = function(/* AvlNode */ child) {
+/************ insert and delete should replace these *************
+  this.setLeftChild = function(child) {
     this.leftChild = child;
+    this.height = Math.max(this.leftChild.height, this.rightChild.height)
   }
 
-  /**
-   * Set this node's right child.
-   */
-  this.setRightChild = function(/* AvlNode */ child) {
+  this.setRightChild = function(child) {
     this.rightChild = child;
+    this.height = Math.max(this.leftChild.height, this.rightChild.height)
   }
-
-  /**
-   * Returns the height of the subtree rooted at
-   *   this node.
-   */
-  this.getHeight = function() {
-    return Math.max(this.getLeftChildHeight(),
-                    this.getRightChildHeight())
-           + 1;
-  }
-
+******************************************************************/
+  
   /**
    * Returns the balance factor of this node.
    * AVL invariant requires that the balance
    * factor is -1, 0, or 1.
    */
   this.getBalanceFactor = function() {
-    return this.getLeftChildHeight() - this.getRightChildHeight();
+    var leftHeight, rightHeight;
+    if (this.leftChild) {
+      leftHeight = this.leftChild.height;
+    } else {
+      leftHeight = 0;
+    }
+    if (this.rightChild) {
+      rightHeight = this.rightChild.height;
+    } else {
+      rightHeight = 0;
+    }
+    return leftHeight - rightHeight;
   }
 
   /**
