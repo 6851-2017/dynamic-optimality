@@ -1,4 +1,4 @@
-console.log('working set structure');
+console.log('loaded avl tree');
 
 /**
  * A structure that maintains the working set invariant.
@@ -51,13 +51,26 @@ class WorkingSetStructure {
   // Public methods
   //
 
-  // TODO: spec
+  /**
+   * Insert value into the structure.
+   */
   insert(value) {
 
   }
 
-  // TODO: spec
+  /**
+   * Delete value from the structure.
+   */
   delete(value) {
 
   }
+
+  /**
+   * Search for value in the structure.
+   * Returns null if the value isn't in the structure.
+   */ 
+  search(value) {
+
+  }
 }
+
