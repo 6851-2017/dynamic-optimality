@@ -34,39 +34,10 @@ class AvlNode {
     // TODO
   }
 
-  /** should not need these
-  getLeftChildHeight() {
-    if (!this.leftChild) {
-      return 0;
-    }
-    return this.leftChild.getHeight();
-  }
-
-  getRightChildHeight() {
-    if (!this.rightChild) {
-      return 0;
-    }
-    return this.rightChild.getHeight();
-  }
-  */
-
   ////////////////////////////////////////////////
   // Public methods
   //
-
-  /******* insert/delete should replace these *******
-  setLeftChild(child) {
-    this.leftChild = child;
-  }
-
-  setRightChild(child) {
-    this.rightChild = child;
-  }
-  **************************************************/
   
-  // TODO: Need to store height as an attribute,
-  //   otherwise will take O(n) time to get height
-
   /**
    * Returns the balance factor of this node.
    * AVL invariant requires that the balance
@@ -105,7 +76,9 @@ class AvlNode {
 
   /**
    * Starting at this node, updates the heights of all nodes
-   * on the path to the root. Used after an insert operation.
+   * on the path to the root. Used after an insert/delete operation
+   * to account for those operations modifying the heights of
+   * subtrees.
    */
   updateHeights() {
     var x = this;
@@ -133,14 +106,60 @@ class AvlNode {
   }
 
   /**
-   * Delete the given node from this node's subtree.
-   * Returns true if the node was in this node's
-   *   subtree and false otherwise.
+   * Delete the given value from this node's subtree.
+   * Returns true if the value was in this node's
+   * subtree and false otherwise.
    */
-  delete(/* AvlNode */ node) {
-    // TODO
-
+  del(val) {
+    var node = this.search(val);
+    if (node == null) {
+      return false;
+    }
+    if (node.leftChild != null && node.rightChild != null) {
+      var succ = node.successor();
+      node.value = succ.value;
+      succ.del(succ.value);
+    } else if (node.leftChild != null) {
+      node.replaceWith(node.leftChild);
+    } else if (node.rightChild != null) {
+      node.replaceWith(node.rightChild);
+    } else {
+      node.replaceWith(null);
+    }
     this.rebalance();
+    return true;
+  }
+
+  /**
+   * Finds the immediate successor of this node.
+   */
+  successor() {
+    var current = null;
+    if (this.rightChild != null) {
+      current = this.rightChild;
+    }
+    while (current.leftChild){
+      current = current.leftChild;
+    }
+    return current;
+  }
+
+  /**
+   * Replace this node with a new node (one of its child nodes)
+   * or null, effectively erasing it. Used in delete, in the 
+   * case of the deleted node having 0 or 1 children.
+   */
+  replaceWith(newNode) {
+    if (this.parent != null) {
+      if (this == this.parent.leftChild) {
+        this.parent.leftChild = newNode;
+      } else {
+        this.parent.rightChild = newNode;
+      }
+    }
+    if (newNode != null) {
+      newNode.parent = this.parent;
+    }
   }
 
   /**
@@ -162,10 +181,21 @@ class AvlNode {
 }
 
 // Demonstrate basic functions
-var rootNode = new AvlNode(7);
+var rootNode = new AvlNode(10);
 rootNode.insert(5);
 rootNode.insert(3);
-
+rootNode.insert(6);
+rootNode.insert(9);
+rootNode.insert(15);
+rootNode.insert(12);
+console.log(rootNode);
+rootNode.del(5);
+console.log('-------');
+console.log(rootNode);
+rootNode.del(15);
+console.log('--------');
+console.log(rootNode);
+console.log('--------');
 console.log(rootNode.height); // 3
 console.log(rootNode.getBalanceFactor()); // 2
 
@@ -173,14 +203,12 @@ rootNode.insert(25);
 console.log(rootNode.height); // 3
 console.log(rootNode.getBalanceFactor()); // 1
 // Demonstrate search
-/**
 console.log(rootNode.search(5));
 console.log(rootNode.search(7));
 console.log(rootNode.search(3));
 console.log(rootNode.search(25));
 console.log(rootNode.search(40));
 console.log(rootNode.search(-2));
-*/
 
 //////////////////////////////////////
 
