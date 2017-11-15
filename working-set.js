@@ -115,6 +115,7 @@ class AvlNode {
     if (node == null) {
       return false;
     }
+    var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
       node.value = succ.value;
@@ -126,6 +127,7 @@ class AvlNode {
     } else {
       node.replaceWith(null);
     }
+    parent.updateHeights();
     this.rebalance();
     return true;
   }
@@ -184,27 +186,23 @@ class AvlNode {
 var rootNode = new AvlNode(10);
 rootNode.insert(5);
 rootNode.insert(3);
+rootNode.insert(2);
 rootNode.insert(6);
 rootNode.insert(9);
 rootNode.insert(15);
 rootNode.insert(12);
-console.log(rootNode);
 rootNode.del(5);
-console.log('-------');
-console.log(rootNode);
 rootNode.del(15);
-console.log('--------');
-console.log(rootNode);
-console.log('--------');
-console.log(rootNode.height); // 3
-console.log(rootNode.getBalanceFactor()); // 2
+
+console.log('tree height: '+rootNode.height); // 4 
+console.log('balance factor: '+rootNode.getBalanceFactor()); // 2
 
 rootNode.insert(25);
-console.log(rootNode.height); // 3
-console.log(rootNode.getBalanceFactor()); // 1
+
+console.log('tree height: '+rootNode.height); // 4 
+console.log('balance factor: '+rootNode.getBalanceFactor()); // 1
 // Demonstrate search
 console.log(rootNode.search(5));
-console.log(rootNode.search(7));
 console.log(rootNode.search(3));
 console.log(rootNode.search(25));
 console.log(rootNode.search(40));
