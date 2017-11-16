@@ -157,7 +157,6 @@ class AvlNode {
       i++;
       var value = "___ ";
       if (node != null) {
-        console.log(node.value.toString().length);
         value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ";
       }
       if (l != level) {
@@ -320,11 +319,17 @@ class AvlNode {
 // Demonstrate basic functions
 var rootNode = new AvlNode(10);
 rootNode.insert(5);
+console.log(rootNode.toString());
 rootNode.insert(3);
+console.log(rootNode.toString());
 rootNode.insert(2);
+console.log(rootNode.toString());
 rootNode.insert(6);
+console.log(rootNode.toString());
 rootNode.insert(9);
+console.log(rootNode.toString());
 rootNode.insert(15);
+console.log(rootNode.toString());
 rootNode.insert(12);
 rootNode.del(5);
 rootNode.del(15);
