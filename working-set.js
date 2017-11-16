@@ -62,6 +62,7 @@ class AvlNode {
    */ 
 
   rotateR() {
+    console.log("rotate right");
     // rotation
     var temp = this.copy();
     this.updateRoot(temp.leftChild);
@@ -82,6 +83,7 @@ class AvlNode {
   }
 
   rotateL() {
+    console.log("rotate left");
     // rotation
     var temp = this.copy();
     this.updateRoot(temp.rightChild);
@@ -93,10 +95,8 @@ class AvlNode {
       this.leftChild.rightChild.parent = this.leftChild;
     }
     // update heights
-    //this.updateHeights();
     var rightHeight = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.height : 0;
     var leftHeight = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
-    
     this.leftChild.height = Math.max(rightHeight, leftHeight) + 1
     rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
     leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
@@ -104,6 +104,7 @@ class AvlNode {
   }
 
   rotateLR() {
+    console.log("rotate left-right");
     this.leftChild.rotateL();
     if (this.leftChild != null) {
       this.leftChild.parent = this;
@@ -112,6 +113,7 @@ class AvlNode {
   }
 
   rotateRL() {
+    console.log("rotate right-left");
     this.rightChild.rotateR();
     if (this.rightChild != null) {
       this.rightChild.parent = this;
@@ -320,6 +322,7 @@ class AvlNode {
    * Carry out an operation on this tree.
    */
   doOp(op, val) {
+    console.log(op, val);
     if (op == "del") {
       this.del(val);
     } else if (op == "insert") {
@@ -349,6 +352,8 @@ console.log(rootNode.toString());
 rootNode.doOp('del', 2);
 console.log(rootNode.toString());
 rootNode.doOp('del', 5);
+console.log(rootNode.toString());
+rootNode.doOp('del', 10);
 console.log(rootNode.toString());
 
 // Demonstrate search
