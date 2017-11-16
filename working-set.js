@@ -34,6 +34,7 @@ class AvlNode {
     // Rebalance only while |balance factor| is not <= 1:
     var factor = this.getBalanceFactor();
     if (!(Math.abs(factor) <= 1)) {
+      console.log(this.getBalanceFactor());
       // R and LR rotations
       if (factor > 1) {
         var heightA = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
@@ -208,7 +209,6 @@ class AvlNode {
         this.updateHeights();
       }
     }
-    this.rebalance();
   }
 
   /**
@@ -255,8 +255,8 @@ class AvlNode {
     var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
-      node.value = succ.value;
       succ.del(succ.value);
+      node.value = succ.value;
     } else if (node.leftChild != null) {
       node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
@@ -265,7 +265,6 @@ class AvlNode {
       node.replaceWith(null);
     }
     if (parent != null) { parent.updateHeights(); }
-    this.rebalance();
     return true;
   }
 
@@ -317,17 +316,36 @@ class AvlNode {
       return null;
     }
   }
+
+  /**
+   * Carry out an operation on this tree.
+   */
+  doOp(op, val) {
+    if (op == "del") {
+      this.del(val);
+    } else if (op == "insert") {
+      this.insert(val);
+    }
+    this.rebalance();
+  }
 }
 
 // Demonstrate basic functions
 var rootNode = new AvlNode(10);
-rootNode.insert(5);
-rootNode.insert(3);
-rootNode.insert(2);
-rootNode.insert(6);
-rootNode.insert(9);
-rootNode.insert(15);
-rootNode.insert(12);
+rootNode.doOp('insert', 5);
+rootNode.doOp('insert', 3);
+rootNode.doOp('insert', 2);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 6);
+console.log(rootNode.toString());
+rootNode.doOp('insert',  9);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 15);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 12);
+console.log('before deleting anything: \n'+rootNode.toString());
+rootNode.doOp('del', 2);
+console.log('after deleting 2: \n'+rootNode.toString());
 rootNode.del(5);
 console.log('after deleting 5: \n'+rootNode.toString());
 rootNode.del(15);
