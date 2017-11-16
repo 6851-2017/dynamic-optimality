@@ -153,18 +153,21 @@ class AvlNode {
     var s = "\n";
     var q = [[this, 1]];
     var i = 0;
-    var max_chars = 3;
-    var l = 1;
+    var max_chars = 2;
+    var l = 0;
     while (i < q.length) {
       var node = q[i][0];
       var level = q[i][1];
       i++;
-      var value = "___ ";
+      var value = "_".repeat(max_chars)+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       if (node != null) {
-        value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ";
+        value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       }
       if (l != level) {
         s += "\n";
+        if (level < this.height){
+          s += " ".repeat((Math.pow(2, this.height-level)-1)*max_chars);
+        }
         l = level;
       }
       s += value;
@@ -346,17 +349,11 @@ rootNode.doOp('insert', 12);
 console.log('before deleting anything: \n'+rootNode.toString());
 rootNode.doOp('del', 2);
 console.log('after deleting 2: \n'+rootNode.toString());
-rootNode.del(5);
+rootNode.doOp('del', 5);
 console.log('after deleting 5: \n'+rootNode.toString());
-rootNode.del(15);
-console.log('after deletes: \n'+rootNode.toString());
-console.log('tree height: '+rootNode.height); // 4 
-console.log('balance factor: '+rootNode.getBalanceFactor()); // 2
+rootNode.doOp('del', 15);
+console.log('after deleting 15: \n'+rootNode.toString());
 
-rootNode.insert(25);
-
-console.log('tree height: '+rootNode.height); // 4 
-console.log('balance factor: '+rootNode.getBalanceFactor()); // 1
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
