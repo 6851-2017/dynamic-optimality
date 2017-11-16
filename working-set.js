@@ -55,11 +55,10 @@ class AvlNode {
         else if (heightB >= heightA && heightA >= heightC) { this.rotateRL(); }
       }
     }
-    //console.log("root", this.value);
   }
 
   /**
-   * Helper functions (rotations) for rebalancing.
+   * Helper functions (rotations and updating root) for rebalancing.
    */ 
 
   rotateR() {
@@ -133,7 +132,7 @@ class AvlNode {
   //
 
   /**
-   * Make a copy of node. Returns copy.
+   * Make a copy of node ('this'). Returns copy.
    */
   copy() {
     var newNode = new AvlNode(this.value);
@@ -175,6 +174,7 @@ class AvlNode {
     }
     return s;
   }
+
   /**
    * Returns the balance factor of this node.
    * AVL invariant requires that the balance
@@ -322,7 +322,7 @@ class AvlNode {
 // Demonstrate basic functions
 var rootNode = new AvlNode(10);
 rootNode.insert(5);
-rootNode.insert(3);
+rootNode.kgtinsert(3);
 rootNode.insert(2);
 rootNode.insert(6);
 rootNode.insert(9);
@@ -351,12 +351,15 @@ console.log(rootNode.search(-2));
 //////////////////////////////////////
 
 /**
- * A structure that maintains the working set invariant.
+ * A class for a structure that maintains the working set invariant.
+ * 
  * The working set invariant:
  *   (2) Every element in deque i has a smaller working
  *       set than every element in deque i+1.
  *   (1) Element x lies after y in some deque i iff 
  *       x has a smaller working set than y.
+ * 
+ * Reference: https://en.wikipedia.org/wiki/Iacono%27s_working_set_structure
  */
 class WorkingSetStructure {
   constructor() {
@@ -394,7 +397,25 @@ class WorkingSetStructure {
    *   by 1, maintaining the working set invariant.
    */
   shift(h, j) {
-
+    if (h < j) {
+      for (i = h; i < j; i++) {
+        // deque and item from Q_i, and enqueue the item into Q_i+1
+        var item = this.deques[i].dequeue();
+        this.deques[i + 1].enqueue(item);
+        // delete the item from T_i and insert into T_i+1
+        this.trees[i].delete(item);
+        this.trees[i + 1].insert(item);
+      }
+    } else if (j < h) {
+      for (i = h; i > j; i--) {
+        // deque and item from Q_i, and enqueue the item into Q_i-1
+        var item = this.deques[i].dequeue();
+        this.deques[i - 1].enqueue(item);
+        // delete the item from T_i and insert into T_i-1
+        this.trees[i].delete(item);
+        this.trees[i - 1].insert(item);
+      }
+    }
   }
 
   ////////////////////////////////////////////////
