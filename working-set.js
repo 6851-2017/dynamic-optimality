@@ -130,6 +130,38 @@ class AvlNode {
   }
   
   /**
+   * Overrides default toString() method. 
+   * Returns a pretty-printed tree.
+   */
+  toString() {
+    var s = "\n";
+    var q = [[this, 1]];
+    var i = 0;
+    var max_chars = 3;
+    var l = 1;
+    while (i < q.length) {
+      var node = q[i][0];
+      var level = q[i][1];
+      i++;
+      var value = "___ ";
+      if (node != null) {
+        console.log(node.value.toString().length);
+        value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ";
+      }
+      if (l != level) {
+        s += "\n";
+        l = level;
+      }
+      s += value;
+      var rightChild = [null, level+1];
+      var leftChild = [null, level+1];
+      if (node != null) {rightChild = [node.rightChild, level+1]};
+      if (node != null) {leftChild = [node.leftChild, level+1]};
+      if (l < this.height) {q.push(leftChild, rightChild);}
+    }
+    return s;
+  }
+  /**
    * Returns the balance factor of this node.
    * AVL invariant requires that the balance
    * factor is -1, 0, or 1.
@@ -162,7 +194,7 @@ class AvlNode {
         this.updateHeights();
       }
     }
-    this.rebalance();
+    //this.rebalance();
   }
 
   /**
@@ -219,7 +251,7 @@ class AvlNode {
       node.replaceWith(null);
     }
     parent.updateHeights();
-    this.rebalance();
+    //this.rebalance();
     return true;
   }
 
@@ -284,7 +316,7 @@ rootNode.insert(15);
 rootNode.insert(12);
 rootNode.del(5);
 rootNode.del(15);
-
+console.log("does this work? "+rootNode);
 console.log('tree height: '+rootNode.height); // 4 
 console.log('balance factor: '+rootNode.getBalanceFactor()); // 2
 
@@ -293,11 +325,13 @@ rootNode.insert(25);
 console.log('tree height: '+rootNode.height); // 4 
 console.log('balance factor: '+rootNode.getBalanceFactor()); // 1
 // Demonstrate search
+/**
 console.log(rootNode.search(5));
 console.log(rootNode.search(3));
 console.log(rootNode.search(25));
 console.log(rootNode.search(40));
 console.log(rootNode.search(-2));
+*/
 
 //////////////////////////////////////
 
