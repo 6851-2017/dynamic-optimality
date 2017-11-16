@@ -72,7 +72,13 @@ class AvlNode {
     if (this.rightChild.leftChild != null) {
       this.rightChild.leftChild.parent = this.rightChild;
     }
-    this.updateHeights();
+    // update heights
+    var rightHeight = (this.rightChild.rightChild != null) ? this.rightChild.rightChild.height : 0;
+    var leftHeight = (this.rightChild.leftChild != null) ? this.rightChild.leftChild.height : 0;
+    this.rightChild.height = Math.max(rightHeight, leftHeight) + 1
+    rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
+    leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
+    this.height = Math.max(rightHeight, leftHeight) + 1
   }
 
   rotateL() {
@@ -86,7 +92,13 @@ class AvlNode {
     if (this.leftChild.rightChild != null) {
       this.leftChild.rightChild.parent = this.leftChild;
     }
-    this.updateHeights();
+    // update heights
+    var rightHeight = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.height : 0;
+    var leftHeight = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
+    this.leftChild.height = Math.max(rightHeight, leftHeight) + 1
+    rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
+    leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
+    this.height = Math.max(rightHeight, leftHeight) + 1
   }
 
   rotateLR() {
@@ -109,7 +121,7 @@ class AvlNode {
     this.value = newRoot.value;
     this.leftChild = newRoot.leftChild;
     this.rightChild = newRoot.rightChild;
-    this.height = Math.max(this.height, newRoot.height);
+    //this.height = Math.max(this.height, newRoot.height);
     this.parent = null;
   }
 
