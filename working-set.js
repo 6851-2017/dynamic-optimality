@@ -153,18 +153,21 @@ class AvlNode {
     var s = "\n";
     var q = [[this, 1]];
     var i = 0;
-    var max_chars = 3;
-    var l = 1;
+    var max_chars = 2;
+    var l = 0;
     while (i < q.length) {
       var node = q[i][0];
       var level = q[i][1];
       i++;
-      var value = "___ ";
+      var value = "_".repeat(max_chars)+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       if (node != null) {
-        value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ";
+        value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       }
       if (l != level) {
         s += "\n";
+        if (level < this.height){
+          s += " ".repeat((Math.pow(2, this.height-level)-1)*max_chars);
+        }
         l = level;
       }
       s += value;
