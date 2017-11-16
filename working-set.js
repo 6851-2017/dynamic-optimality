@@ -149,7 +149,6 @@ class AvlNode {
     this.leftChild = newRoot.leftChild;
     this.rightChild = newRoot.rightChild;
     this.height = newRoot.height;
-    this.parent = newRoot.parent;
   }
 
   ////////////////////////////////////////////////
@@ -450,7 +449,7 @@ class WorkingSetStructure {
    */
   shift(h, j) {
     if (h < j) {
-      for (i = h; i < j; i++) {
+      for (var i = h; i < j; i++) {
         // deque and item from Q_i, and enqueue the item into Q_i+1
         var item = this.deques[i].dequeue();
         this.deques[i + 1].enqueue(item);
@@ -459,7 +458,7 @@ class WorkingSetStructure {
         this.trees[i + 1].insert(item);
       }
     } else if (j < h) {
-      for (i = h; i > j; i--) {
+      for (var i = h; i > j; i--) {
         // deque and item from Q_i, and enqueue the item into Q_i-1
         var item = this.deques[i].dequeue();
         this.deques[i - 1].enqueue(item);
@@ -502,7 +501,7 @@ class WorkingSetStructure {
    */
   delete(value) {
     var foundIndex = null;
-    for (int i = 0; i < this.trees.length; i++) {
+    for (i = 0; i < this.trees.length; i++) {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
