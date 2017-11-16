@@ -208,7 +208,6 @@ class AvlNode {
         this.updateHeights();
       }
     }
-    this.rebalance();
   }
 
   /**
@@ -255,8 +254,8 @@ class AvlNode {
     var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
-      node.value = succ.value;
       succ.del(succ.value);
+      node.value = succ.value;
     } else if (node.leftChild != null) {
       node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
@@ -265,7 +264,6 @@ class AvlNode {
       node.replaceWith(null);
     }
     if (parent != null) { parent.updateHeights(); }
-    this.rebalance();
     return true;
   }
 
@@ -317,28 +315,42 @@ class AvlNode {
       return null;
     }
   }
+
+  /**
+   * Carry out an operation on this tree.
+   */
+  doOp(op, val) {
+    if (op == "del") {
+      this.del(val);
+    } else if (op == "insert") {
+      this.insert(val);
+    }
+    this.rebalance();
+  }
 }
 
 // Demonstrate basic functions
 var rootNode = new AvlNode(10);
-rootNode.insert(5);
-rootNode.kgtinsert(3);
-rootNode.insert(2);
-rootNode.insert(6);
-rootNode.insert(9);
-rootNode.insert(15);
-rootNode.insert(12);
-rootNode.del(5);
-console.log('after deleting 5: \n'+rootNode.toString());
-rootNode.del(15);
-console.log('after deletes: \n'+rootNode.toString());
-console.log('tree height: '+rootNode.height); // 4 
-console.log('balance factor: '+rootNode.getBalanceFactor()); // 2
+console.log(rootNode.toString());
+rootNode.doOp('insert', 5);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 3);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 2);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 6);
+console.log(rootNode.toString());
+rootNode.doOp('insert',  9);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 15);
+console.log(rootNode.toString());
+rootNode.doOp('insert', 12);
+console.log(rootNode.toString());
+rootNode.doOp('del', 2);
+console.log(rootNode.toString());
+rootNode.doOp('del', 5);
+console.log(rootNode.toString());
 
-rootNode.insert(25);
-
-console.log('tree height: '+rootNode.height); // 4 
-console.log('balance factor: '+rootNode.getBalanceFactor()); // 1
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
