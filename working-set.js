@@ -92,7 +92,6 @@ class AvlNode {
     if (this.leftChild.rightChild != null) {
       this.leftChild.rightChild.parent = this.leftChild;
     }
-    this.updateHeights();
     // update heights
     var rightHeight = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.height : 0;
     var leftHeight = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
