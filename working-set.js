@@ -502,7 +502,7 @@ class WorkingSetStructure {
    */
   delete(value) {
     var foundIndex = null;
-    for (int i = 0; i < this.trees.length; i++) {
+    for (var i = 0; i < this.trees.length; i++) {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
