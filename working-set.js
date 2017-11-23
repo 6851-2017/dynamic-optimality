@@ -78,15 +78,16 @@ class AvlNode {
     console.log("rotate right");
     // rotation
     var temp = this.copy();
-    console.log(temp);
     this.updateRoot(temp.leftChild);
-    temp.leftChild = this.rightChild;
-    this.rightChild = temp;
-    // update parents
-    this.rightChild.parent = this;
-    if (this.rightChild.leftChild != null) {
-      this.rightChild.leftChild.parent = this.rightChild;
+    if (this.parent != null) {
+      this.parent.rightChild = this
     }
+    temp.leftChild = this.rightChild;
+    if (this.rightChild != null) {
+      this.rightChild.parent = temp;
+    }
+    this.rightChild = temp;
+    this.rightChild.parent = this;
     // update heights
     var rightHeight = (this.rightChild.rightChild != null) ? this.rightChild.rightChild.height : 0;
     var leftHeight = (this.rightChild.leftChild != null) ? this.rightChild.leftChild.height : 0;
@@ -94,21 +95,28 @@ class AvlNode {
     rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
     leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
     this.height = Math.max(rightHeight, leftHeight) + 1
+    // not sure if the following is necessary...
+    if (this.parent != null) {
+      rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
+      leftHeight = (this.parent.leftChild != null) ? this.parent.leftChild.height : 0;
+      this.parent.height = Math.max(rightHeight, leftHeight) + 1
+    }
   }
 
   rotateL() {
     console.log("rotate left");
     // rotation
     var temp = this.copy();
-    console.log(temp);
     this.updateRoot(temp.rightChild);
-    temp.rightChild = this.leftChild;
-    this.leftChild = temp;
-    // update parents
-    this.leftChild.parent = this;
-    if (this.leftChild.rightChild != null) {
-      this.leftChild.rightChild.parent = this.leftChild;
+    if (this.parent != null) {
+      this.parent.leftChild = this
     }
+    temp.rightChild = this.leftChild;
+    if (this.leftChild != null) {
+      this.leftChild.parent = temp;
+    }
+    this.leftChild = temp;
+    this.leftChild.parent = this;
     // update heights
     var rightHeight = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.height : 0;
     var leftHeight = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.height : 0;
@@ -116,15 +124,18 @@ class AvlNode {
     rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
     leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
     this.height = Math.max(rightHeight, leftHeight) + 1
+    // not sure if the following is necessary...
+    if (this.parent != null) {
+      rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
+      leftHeight = (this.parent.leftChild != null) ? this.parent.leftChild.height : 0;
+      this.parent.height = Math.max(rightHeight, leftHeight) + 1
+    }
   }
 
   rotateLR() {
     console.log("rotate left-right");
     this.leftChild.rotateL();
     console.log(this.toString());
-    if (this.leftChild != null) {
-      this.leftChild.parent = this;
-    }
     this.rotateR();
     console.log(this.toString());
   }
@@ -133,13 +144,6 @@ class AvlNode {
     console.log("rotate right-left");
     this.rightChild.rotateR();
     console.log(this.toString());
-    if (this.rightChild != null) {
-      this.rightChild.parent = this;
-      //console.log(this.rightChild);
-      //console.log(this.rightChild.value, "has parent", this.value, "=", this.rightChild.parent.value);
-      //console.log(this.rightChild.rightChild.parent.value, "has parent", this.rightChild.rightChild.parent.parent);
-      //console.log(this.rightChild.rightChild.value, "has parent", this.rightChild.rightChild.parent);
-    }
     this.rotateL();
     console.log(this.toString());
   }
@@ -148,7 +152,7 @@ class AvlNode {
     this.value = newRoot.value;
     this.leftChild = newRoot.leftChild;
     this.rightChild = newRoot.rightChild;
-    this.height = newRoot.height;
+    //this.height = newRoot.height;
   }
 
   ////////////////////////////////////////////////
@@ -278,15 +282,12 @@ class AvlNode {
     if (node == null) {
       return false;
     }
-    console.log("to be deleted from", node.value);
     var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
       succ.delete(succ.value);
       node.value = succ.value;
     } else if (node.leftChild != null) {
-      console.log("replace with", node.leftChild.value);
-      console.log(this, "\n", node.parent, node.parent.rightChild.parent);
       node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
       node.replaceWith(node.rightChild);
@@ -387,7 +388,13 @@ rootNode.doOp('insert', 14);
 console.log(rootNode.toString());
 rootNode.doOp('delete', 10);
 console.log(rootNode.toString());
+rootNode.doOp('delete', 13);
+console.log(rootNode.toString());
 rootNode.doOp('delete', 15);
+console.log(rootNode.toString());
+rootNode.doOp('delete', 14);
+console.log(rootNode.toString());
+rootNode.doOp('delete', 12);
 console.log(rootNode.toString());
 
 // Demonstrate search
