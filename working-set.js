@@ -279,15 +279,6 @@ class AvlNode {
    */
   delete(val) {
     var node = this.search(val);
-    if (node.leftChild != null) {
-      console.log("HI THERE left", node.leftChild.value)
-    }
-    if (node.rightChild != null) {
-      console.log("HI THERE right", node.rightChild.value)
-    }
-    if (node.parent != null) {
-      console.log("PARENT OF TO DELETE", node.parent.value)
-    }
     if (node == null) {
       return false;
     }
@@ -296,14 +287,11 @@ class AvlNode {
       var succ = node.successor();
       node.value = succ.value;
       succ.delete(succ.value);
-      
     } else if (node.leftChild != null) {
-      console.log("replace with", node.leftChild.value)
       node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
       node.replaceWith(node.rightChild);
     } else {
-      console.log("replace with null")
       node.replaceWith(null);
     }
     if (parent != null) { parent.updateHeights(); }
