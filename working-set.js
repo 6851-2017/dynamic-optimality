@@ -330,9 +330,10 @@ class AvlNode {
    * case of the deleted node having 0 or 1 children.
    */
   replaceWith(newNode) {
-    console.log(newNode)
+    if (newNode != null) {
+      newNode.parent = this.parent;
+    }
     if (this.parent != null) {
-      console.log(newNode, this.parent.rightChild)
       var left = false
       var right = false
       if (this != null && this.parent.leftChild != null) {
@@ -347,58 +348,11 @@ class AvlNode {
       }
       if (this == this.parent.leftChild || left) {
         this.parent.leftChild = newNode;
-        if (newNode == null) {
-          console.log("hello null left")
-          this.parent = null
-          //this.value = null;
-          //this.leftChild = null;
-          //this.rightChild = null;
-          //this.height = null;
-          //this.parent = null;
-          //this.size = null;
-        } else {
-          this.value = newNode.value;
-          this.rightChild = newNode.leftChild
-          if (this.rightChild != null) {
-            this.rightChild.parent = this
-            this.rightChild.rightChild = newNode.rightChild
-            if (this.rightChild.rightChild != null) {
-              this.rightChild.rightChild.parent = this.rightChild
-            }
-          }
-          if (this.parent.rightChild != null) {
-            console.log(this.value, "?=", this.parent.rightChild.value)
-          }
-        }
+        this.parent = null
       } else if (this == this.parent.rightChild || right) {
-        console.log("@1", newNode, this.parent);
         this.parent.rightChild = newNode;
-        if (newNode == null) {
-          console.log("hello null right")
-          //this.value = null;
-          //this.leftChild = null;
-          //this.rightChild = null;
-          //this.height = null;
-          this.parent = null;
-          //this.size = null;
-        } else {
-          this.value = newNode.value;
-          this.leftChild = newNode.rightChild
-          if (this.leftChild != null) {
-            this.leftChild.parent = this
-            this.leftChild.leftChild = newNode.leftChild
-            if (this.leftChild.leftChild != null) {
-              this.leftChild.leftChild.parent = this.leftChild
-            }
-          }
-          if (this.parent.rightChild != null) {
-            console.log(this.value, "?=", this.parent.rightChild.value)
-          }
-        }
+        this.parent = null;
       }
-    }
-    if (newNode != null) {
-      newNode.parent = this.parent;
     }
   }
 
