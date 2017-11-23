@@ -80,3 +80,8 @@
 .tree li div:hover+ul ul::before{
     border-color:  #94a0b4;
 }
+
+
+.null-elt {
+    background-color: gray;
+}
