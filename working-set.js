@@ -186,7 +186,7 @@ class AvlNode {
       var level = q[i][1];
       i++;
       var value = "_".repeat(max_chars)+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
-      if (node != null) {
+      if (node != null && node.value != null) {
         value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       }
       if (l != level) {
@@ -279,19 +279,31 @@ class AvlNode {
    */
   delete(val) {
     var node = this.search(val);
+    if (node.leftChild != null) {
+      console.log("HI THERE left", node.leftChild.value)
+    }
+    if (node.rightChild != null) {
+      console.log("HI THERE right", node.rightChild.value)
+    }
+    if (node.parent != null) {
+      console.log("PARENT OF TO DELETE", node.parent.value)
+    }
     if (node == null) {
       return false;
     }
     var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
-      succ.delete(succ.value);
       node.value = succ.value;
+      succ.delete(succ.value);
+      
     } else if (node.leftChild != null) {
+      console.log("replace with", node.leftChild.value)
       node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
       node.replaceWith(node.rightChild);
     } else {
+      console.log("replace with null")
       node.replaceWith(null);
     }
     if (parent != null) { parent.updateHeights(); }
@@ -318,11 +330,71 @@ class AvlNode {
    * case of the deleted node having 0 or 1 children.
    */
   replaceWith(newNode) {
+    console.log(newNode)
     if (this.parent != null) {
-      if (this == this.parent.leftChild) {
+      console.log(newNode, this.parent.rightChild)
+      var left = false
+      var right = false
+      if (this != null && this.parent.leftChild != null) {
+        if (this.value == this.parent.leftChild.value) {
+          left = true
+        }
+      }
+      if (this != null && this.parent.rightChild != null) {
+        if (this.value == this.parent.rightChild.value) {
+          right = true
+        }
+      }
+      if (this == this.parent.leftChild || left) {
         this.parent.leftChild = newNode;
-      } else {
+        if (newNode == null) {
+          console.log("hello null left")
+          this.parent = null
+          //this.value = null;
+          //this.leftChild = null;
+          //this.rightChild = null;
+          //this.height = null;
+          //this.parent = null;
+          //this.size = null;
+        } else {
+          this.value = newNode.value;
+          this.rightChild = newNode.leftChild
+          if (this.rightChild != null) {
+            this.rightChild.parent = this
+            this.rightChild.rightChild = newNode.rightChild
+            if (this.rightChild.rightChild != null) {
+              this.rightChild.rightChild.parent = this.rightChild
+            }
+          }
+          if (this.parent.rightChild != null) {
+            console.log(this.value, "?=", this.parent.rightChild.value)
+          }
+        }
+      } else if (this == this.parent.rightChild || right) {
+        console.log("@1", newNode, this.parent);
         this.parent.rightChild = newNode;
+        if (newNode == null) {
+          console.log("hello null right")
+          //this.value = null;
+          //this.leftChild = null;
+          //this.rightChild = null;
+          //this.height = null;
+          this.parent = null;
+          //this.size = null;
+        } else {
+          this.value = newNode.value;
+          this.leftChild = newNode.rightChild
+          if (this.leftChild != null) {
+            this.leftChild.parent = this
+            this.leftChild.leftChild = newNode.leftChild
+            if (this.leftChild.leftChild != null) {
+              this.leftChild.leftChild.parent = this.leftChild
+            }
+          }
+          if (this.parent.rightChild != null) {
+            console.log(this.value, "?=", this.parent.rightChild.value)
+          }
+        }
       }
     }
     if (newNode != null) {
