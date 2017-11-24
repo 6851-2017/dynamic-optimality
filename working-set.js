@@ -151,7 +151,13 @@ class AvlNode {
   updateRoot(newRoot) {
     this.value = newRoot.value;
     this.leftChild = newRoot.leftChild;
+    if (this.leftChild != null) {
+      this.leftChild.parent = this;
+    }
     this.rightChild = newRoot.rightChild;
+    if (this.rightChild != null) {
+      this.rightChild.parent = this;
+    }
     //this.height = newRoot.height;
   }
 
@@ -340,6 +346,8 @@ class AvlNode {
       } else if (this == this.parent.rightChild || right) {
         this.parent.rightChild = newNode;
         this.parent = null;
+        //console.log('after replacement: ');
+        //console.log(newNode.parent);
       }
     }
   }
@@ -400,17 +408,21 @@ rootNode.doOp('insert', 13);
 console.log(rootNode.toString());
 rootNode.doOp('insert', 14);
 console.log(rootNode.toString());
-rootNode.doOp('delete', 10);
+//console.log(rootNode);
+rootNode.doOp('delete', 15);
+//console.log(rootNode);
 console.log(rootNode.toString());
 rootNode.doOp('delete', 13);
 console.log(rootNode.toString());
-rootNode.doOp('delete', 15);
+
+rootNode.doOp('delete', 10);
 console.log(rootNode.toString());
+/*
 rootNode.doOp('delete', 14);
 console.log(rootNode.toString());
 rootNode.doOp('delete', 12);
 console.log(rootNode.toString());
-
+*/
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
