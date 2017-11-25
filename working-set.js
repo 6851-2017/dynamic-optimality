@@ -413,8 +413,11 @@ rootNode.delete(14);
 console.log(rootNode.size);
 console.log(rootNode.toString());
 rootNode.delete(30);
+rootNode.delete(25);
 console.log(rootNode.toString());
-
+rootNode.delete(31);
+rootNode.delete(28);
+console.log(rootNode.toString());
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
