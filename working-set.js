@@ -99,6 +99,13 @@ class AvlNode {
     rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
     leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
     this.height = Math.max(rightHeight, leftHeight) + 1
+    // update sizes
+    var rightSize = (this.rightChild.rightChild != null) ? this.rightChild.rightChild.size : 0;
+    var leftSize = (this.rightChild.leftChild != null) ? this.rightChild.leftChild.size : 0;
+    this.rightChild.size = rightSize + leftSize + 1;
+    rightSize = (this.rightChild != null) ? this.rightChild.size : 0;
+    leftSize = (this.rightChild != null) ? this.leftChild.size : 0;
+    this.size = rightSize + leftSize + 1;
     // not sure if the following is necessary...
     if (this.parent != null) {
       rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
@@ -128,6 +135,13 @@ class AvlNode {
     rightHeight = (this.rightChild != null) ? this.rightChild.height : 0;
     leftHeight = (this.leftChild != null) ? this.leftChild.height : 0;
     this.height = Math.max(rightHeight, leftHeight) + 1
+    // update sizes
+    var rightSize = (this.leftChild.rightChild != null) ? this.leftChild.rightChild.size : 0;
+    var leftSize = (this.leftChild.leftChild != null) ? this.leftChild.leftChild.size : 0;
+    this.leftChild.size = rightSize + leftSize + 1;
+    rightSize = (this.rightChild != null) ? this.rightChild.size : 0;
+    leftSize = (this.leftChild != null) ? this.leftChild.size : 0;
+    this.size = rightSize + leftSize + 1;
     // not sure if the following is necessary...
     if (this.parent != null) {
       rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
@@ -440,9 +454,9 @@ class AvlNode {
 
 // Demonstrate basic functions
 var rootNode = new AvlNode(10);
-rootNode.insert([5, 3, 2, 6, 9, 15, 12, 13, 14]);
+var toInsert = [5, 3, 2, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
+rootNode.insert(toInsert);
 console.log(rootNode.toString());
-console.log("-------");
 rootNode.delete(2);
 rootNode.delete(5);
 console.log(rootNode.toString());
