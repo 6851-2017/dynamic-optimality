@@ -8,6 +8,9 @@ class AvlNode {
     /** The value that this node stores */
     this.value = value;
 
+    /** The node's parent*/
+    this.parent = null;
+    
     /** The node's left child */
     this.leftChild = null;
 
@@ -17,9 +20,6 @@ class AvlNode {
     /** The node's height */
     this.height = 1;
   
-    /** The node's parent*/
-    this.parent = null;
-    
     /** The size of this node's subtree, including itself */
     this.size = 1;
   }
@@ -412,7 +412,8 @@ rootNode.delete(13);
 rootNode.delete(14);
 console.log(rootNode.size);
 console.log(rootNode.toString());
-
+rootNode.delete(30);
+console.log(rootNode.toString());
 
 // Demonstrate search
 /**
@@ -501,22 +502,20 @@ class WorkingSetStructure {
    * Insert value into the structure.
    */
   insert(value) {
-    if (this.trees) {
-      this.trees[0].insert(value);
+    if (this.trees && this.deques) {
+      var k = this.trees.length;
+      if (this.trees[k-1].size > Math.pow(2, Math.pow(2, k))) {
+        // TODO need support for empty constructors
+        this.trees.push(AvlNode());
+        this.deques.push(deque());
+      } else {
+        this.trees[0].insert(value);
+        this.deques[0].enqueue(value);
+      }
     } else {
-      this.trees.push(AvlNode(value))
-    }
-    if (this.deques) {
-      this.deques[0].enqueue(value);
-    } else {
+      this.trees.push(AvlNode(value));
       this.deques.push(deque(value));
     }
-    // TODO check if last tree is 'full': requires maintaining
-    // a size attribute of trees. will be annoying to maintain
-    // b/c of rebalances, inserts, deletes
-    //
-    // if last tree is full, create new empty T_k and Q_k. 
-    // perform shift up to this new index.
     this.shift(0, this.deques.length -1);
   }
 
