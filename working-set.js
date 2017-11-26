@@ -507,7 +507,7 @@ class WorkingSetStructure {
   insert(value) {
     if (this.trees && this.deques) {
       var k = this.trees.length;
-      if (this.trees[k-1].size > Math.pow(2, Math.pow(2, k))) {
+      if (this.trees[k-1].size = Math.pow(2, Math.pow(2, k))) {
         // TODO need support for empty constructors
         this.trees.push(AvlNode());
         this.deques.push(deque());
