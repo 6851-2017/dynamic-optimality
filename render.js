@@ -4,8 +4,7 @@ $(document).ready(function() {
   var rootNodeDemo = new AvlNode(10);
   rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12]);
   console.log(rootNodeDemo.toString());
-
-
+  
   var treeHtml = getTreeHtmlOverall(rootNodeDemo);
   var container = $('.container');
   container.append(treeHtml);
@@ -56,3 +55,22 @@ function getChildHtml(child) {
   }
 }
 
+/* Example tree HTML:
+
+<div class="tree"> 
+  <ul>
+    <li>
+      <div> Main </div>
+      <ul>
+          <li><div>Sub-1</div></li>
+          <li><div>Sub-2</div>
+            <ul>
+              <li><div>Sub-2-1</div></li>
+              <li><div>Sub-2-2</div></li>
+            </ul>  
+          </li>
+      </ul>                      
+    </li>
+  </ul>             
+</div>
+*/

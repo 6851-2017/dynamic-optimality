@@ -1,3 +1,24 @@
+body {
+    margin: 0;
+    font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.title {
+    display: block;
+    color: white;
+    text-align: center;
+    font-size: large;
+    background-color: #00BCD4;
+    margin: 0;
+    padding: 12;
+}
+
+.sub {
+    background-color: #80DEEA;
+    font-size: medium;
+    padding: 8;
+}
+
 .tree ul {
     padding-top: 20px; position: relative;
     

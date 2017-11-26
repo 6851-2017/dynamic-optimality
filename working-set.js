@@ -44,13 +44,11 @@ class AvlNode {
         var heightC = (this.rightChild != null) ? this.rightChild.height : 0;
         // R:
         if (heightA >= heightB && heightA >= heightC) {
-          console.log("-----R ROTATE-----");
           this.rotateR();
           this.parent = null;
         }
         // LR: 
         else if (heightB >= heightA && heightB >= heightC) {
-          console.log("-----LR ROTATE-----");
           this.rotateLR();
           this.parent = null;}
       }
@@ -61,12 +59,10 @@ class AvlNode {
         var heightC = (this.leftChild != null) ? this.leftChild.height : 0;
         // L:
         if (heightA >= heightB && heightA >= heightC) {
-          console.log("-----L ROTATE----");
           this.rotateL();
           this.parent = null;}
         // RL:
         else if (heightB >= heightA && heightB >= heightC) {
-          console.log("-----RL ROTATE-----");
           this.rotateRL();
           this.parent = null;}
       }
@@ -397,27 +393,67 @@ class AvlNode {
 
 }
 
+class AvlTree {
+  constructor() {
+    this.rootNode = null;
+  }
+
+  insertSingle(value) {
+    if (!this.rootNode) {
+      console.log("no root node");
+      var rootNode = new AvlNode(value);
+      this.rootNode = rootNode;
+    } else {
+      console.log("root node");
+      this.rootNode.insert(value);
+    }
+  }
+
+  insert(value) {
+    if (typeof value == 'number') {
+      this.insertSingle(value);
+    } else {
+      for (var i = 0; i < value.length; i ++) {
+        this.insertSingle(value[i]);
+      }
+    } 
+  }
+
+  delete(value) {
+    if (!this.rootNode) {
+      return false;
+    } else {
+      return this.rootNode.delete(value);
+    }
+  }
+
+}
+
 // Demonstrate basic functions
-var rootNode = new AvlNode(10);
-var toInsert = [5, 3, 2, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
-rootNode.insert(toInsert);
-console.log(rootNode.size);
-console.log(rootNode.toString());
-rootNode.delete(2);
-rootNode.delete(5);
-console.log(rootNode.size);
-console.log(rootNode.toString());
-rootNode.delete(15);
-rootNode.delete(13);
-rootNode.delete(14);
-console.log(rootNode.size);
-console.log(rootNode.toString());
-rootNode.delete(30);
-rootNode.delete(25);
-console.log(rootNode.toString());
-rootNode.delete(31);
-rootNode.delete(28);
-console.log(rootNode.toString());
+
+var tree = new AvlTree();
+var toInsert = [5, 3, 2, 6, 9, 15, 12, 13, 14/*, 20, 25, 30, 28, 31, 29*/]; 
+tree.insert(toInsert);
+console.log("did the insert");
+console.log(tree.rootNode.size);
+console.log(tree.rootNode.toString());
+// TODO: Doesn't look balanced here
+tree.delete(2);
+tree.delete(5);
+console.log(tree.rootNode.size);
+console.log(tree.rootNode.toString());
+tree.delete(15);
+tree.delete(13);
+tree.delete(14);
+console.log(tree.rootNode.size);
+console.log(tree.rootNode.toString());
+tree.delete(30);
+tree.delete(25);
+console.log(tree.rootNode.toString());
+tree.delete(31);
+tree.delete(28);
+console.log(tree.rootNode.toString());
+
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
@@ -582,6 +618,10 @@ class WorkingSetStructure {
   }
 }
 
+/*
 var workingSet = new WorkingSetStructure();
+
+workingSet.insert(5);
 console.log(workingSet.trees);
 console.log(workingSet.deques);
+*/
