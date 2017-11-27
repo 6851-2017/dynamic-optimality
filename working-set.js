@@ -1,3 +1,194 @@
+/*
+ * A node in a deque.
+ */
+class DequeNode {
+  constructor(value, prev, next) {
+    this.value = value;
+    this.prev = prev;
+    this.next = next;
+  }
+}
+
+/**
+ * An implementation of deque.
+ */ 
+class Deque {
+  constructor() {
+    this.first = null;
+    this.last = null;
+
+    // If the deque has only 1 element,
+    // then this.first = this.last.
+
+    // If the deque has 0 elements,
+    // then this.first = this.last = null.
+  }
+ 
+  /**
+   * Push the given node to the front of the deque.
+   */
+  pushToFront(node) {
+    if (!this.last) {
+      this.last = node;
+      this.first = node;
+      node.next = null;
+      node.prev = null;
+    } else if (this.first == this.last) {
+      this.first = node;
+      this.first.next = this.last;
+      this.last.prev = this.first;
+    } else {
+
+      this.first.prev = node;
+
+      node.next = this.first;
+      node.prev = null;
+
+      this.first = node;
+    }
+  }
+
+  /**
+   * Push the given node to the back of the deque.
+   */
+  pushToBack(node) {
+    if (!this.last) {
+      this.last = node;
+      this.first = node;
+      node.next = null;
+      node.prev = null;
+    } else if (this.first == this.last) {
+      this.last = node;
+      this.last.prev = this.first;
+      this.first.next = this.last;
+    } else {
+      this.last.next = node;
+
+      node.next = null;
+      node.prev = this.last;
+
+      this.last = node;
+    }
+  }
+
+  /**
+   * Pop the node at the front of the deque,
+   *   removing it from the structure.
+   * Returns the popped node.
+   */
+  popFromFront() {
+    var nodeToReturn = this.first;
+    if (this.first == this.last) {
+      this.first = null;
+      this.last = null;
+    } else {
+      this.first = this.first.next;
+      this.first.prev = null;
+    }
+
+    return nodeToReturn;
+  }
+
+  /**
+   * Pop the node at the back of the deque,
+   *   removing it from the structure.
+   * Returns the popped node.
+   */
+  popFromBack() {
+    var nodeToReturn = this.last;
+    if (this.first == this.last) {
+      this.first = null;
+      this.last = null;
+    } else {
+      this.last = this.last.prev;
+      this.last.next = null;
+    }
+    return nodeToReturn;
+  }
+
+  /**
+   * Print the deque from front to back.
+   */
+  showDeque() {
+    var currentNode = this.first;
+    while (currentNode) {
+      console.log(currentNode);
+      currentNode = currentNode.next;
+    }
+  }
+
+  // TODO: Find
+  /**
+   * Finds value in the deque and removes it.
+   * Returns the node with that value, or null
+   *   if the value was not in the deque.
+   */
+  findAndPop(value) {
+    var currentNode = this.first;
+    while (currentNode) {
+      if (currentNode.value == value) {
+
+        if (currentNode.prev) {
+          currentNode.prev.next = currentNode.next;
+        } else {
+          this.first = currentNode.next;
+        }
+
+        if (currentNode.next) {
+          currentNode.next.prev = currentNode.prev;
+        } else {
+          this.last = currentNode.prev;
+        }
+
+        return currentNode;
+      }
+      currentNode = currentNode.next;
+    }
+    return null;
+  }
+
+  toString() {
+    var total = '[';
+    var currentNode = this.first;
+    while (currentNode) {
+      total += currentNode.value + ', ';
+      currentNode = currentNode.next;
+    }
+    total += ']';
+    return total;
+  }
+}
+
+// Demonstration
+/*
+console.log("deque testing");
+var dequeExample = new Deque();
+
+// Test pushes
+//dequeExample.pushToBack(new DequeNode(5));
+//dequeExample.pushToFront(new DequeNode(3));
+//dequeExample.pushToFront(new DequeNode(2));
+//dequeExample.pushToBack(new DequeNode(15));
+//dequeExample.showDeque();
+
+// Test pops
+//dequeExample.popFromBack();
+//dequeExample.popFromFront();
+//dequeExample.popFromFront();
+//dequeExample.showDeque();
+
+// Test find
+//dequeExample.findAndPop(2);
+//dequeExample.findAndPop(5);
+//dequeExample.findAndPop(15);
+//dequeExample.findAndPop(4);
+//dequeExample.findAndPop(3);
+//dequeExample.showDeque();
+
+
+console.log("end of deque testing");
+*/
+
 /**
  * A class that represents a node in an AVL tree.
  *
@@ -261,6 +452,7 @@ class AvlNode {
         this.rightChild = new AvlNode(val);
         this.rightChild.parent = this;
         this.updateHeightsAndSizes();
+        this.rebalancePath();
       }
     } else if (this.value > val) {
       if (this.leftChild != null) {
@@ -269,8 +461,26 @@ class AvlNode {
         this.leftChild = new AvlNode(val);
         this.leftChild.parent = this;
         this.updateHeightsAndSizes();
+        this.rebalancePath();
       }
     }
+  }
+
+  /**
+   * Starting at this node, rebalances all nodes
+   * on the path to the root. Used after an insert/delete operation
+   * to account for those operations modifying the heights of
+   * subtrees.
+   */
+  rebalancePath() {
+    return;
+    /*
+    var x = this;
+    while (x != null) {
+      x.rebalance();
+      x = x.parent;
+    }
+    */
   }
 
   /**
@@ -298,6 +508,7 @@ class AvlNode {
    * subtree and false otherwise.
    */  
   delete(val) {
+    console.log("deleting " + val + " from " + this.value);
     var r = this.deleteHelper(val);
     this.rebalance();
     return r;
@@ -324,7 +535,10 @@ class AvlNode {
     } else {
       node.replaceWith(null);
     }
-    if (parent != null) { parent.updateHeightsAndSizes(); }
+    if (parent != null) { 
+      parent.updateHeightsAndSizes(); 
+      parent.rebalancePath();
+    }
     return true;
   }
 
@@ -400,11 +614,9 @@ class AvlTree {
 
   insertSingle(value) {
     if (!this.rootNode) {
-      console.log("no root node");
       var rootNode = new AvlNode(value);
       this.rootNode = rootNode;
     } else {
-      console.log("root node");
       this.rootNode.insert(value);
     }
   }
@@ -427,17 +639,27 @@ class AvlTree {
     }
   }
 
+  size() {
+    if (!this.rootNode) {
+      return 0;
+    } else {
+      return this.rootNode.size;
+    }
+  }
+
 }
 
 // Demonstrate basic functions
-
+/*
 var tree = new AvlTree();
-var toInsert = [5, 3, 2, 6, 9, 15, 12, 13, 14/*, 20, 25, 30, 28, 31, 29*/]; 
+var toInsert = [5, 4, 3, 2, 1];//, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
 tree.insert(toInsert);
 console.log("did the insert");
 console.log(tree.rootNode.size);
 console.log(tree.rootNode.toString());
+console.log("done");
 // TODO: Doesn't look balanced here
+
 tree.delete(2);
 tree.delete(5);
 console.log(tree.rootNode.size);
@@ -453,7 +675,7 @@ console.log(tree.rootNode.toString());
 tree.delete(31);
 tree.delete(28);
 console.log(tree.rootNode.toString());
-
+*/
 // Demonstrate search
 /**
 console.log(rootNode.search(5));
@@ -485,12 +707,18 @@ class WorkingSetStructure {
       */
     this.trees = [];
 
+    var firstTree = new AvlTree();
+    this.trees.push(firstTree);
+
     /**
       A list of deques to store the elements.
       this.deques[i] has size 2^(2^i)
       (except the last one, which might be smaller).
       */
     this.deques = [];
+
+    var firstDeque = new Deque();
+    this.deques.push(firstDeque);
 
     // For all i, all elements in this.trees[i]
     //   are in all elemetns in this.deques[i] and
@@ -514,21 +742,24 @@ class WorkingSetStructure {
   shift(h, j) {
     if (h < j) {
       for (var i = h; i < j; i++) {
+        console.log("h < j");
         // deque and item from Q_i, and enqueue the item into Q_i+1
-        var item = this.deques[i].dequeue();
-        this.deques[i + 1].enqueue(item);
+        var item = this.deques[i].popFromBack();
+        this.deques[i + 1].pushToFront(item);
         // delete the item from T_i and insert into T_i+1
-        this.trees[i].delete(item);
-        this.trees[i + 1].insert(item);
+        console.log(this.trees[i].rootNode.toString());
+        this.trees[i].delete(item.value);
+        console.log(this.trees[i].rootNode.toString());
+        this.trees[i + 1].insert(item.value);
       }
     } else if (j < h) {
       for (var i = h; i > j; i--) {
         // deque and item from Q_i, and enqueue the item into Q_i-1
-        var item = this.deques[i].dequeue();
-        this.deques[i - 1].enqueue(item);
+        var item = this.deques[i].popFromFront();
+        this.deques[i - 1].pushToBack(item);
         // delete the item from T_i and insert into T_i-1
-        this.trees[i].delete(item);
-        this.trees[i - 1].insert(item);
+        this.trees[i].delete(item.value);
+        this.trees[i - 1].insert(item.value);
       }
     }
   }
@@ -541,21 +772,23 @@ class WorkingSetStructure {
    * Insert value into the structure.
    */
   insert(value) {
-    if (this.trees && this.deques) {
-      var k = this.trees.length;
-      if (this.trees[k-1].size > Math.pow(2, Math.pow(2, k))) {
-        // TODO need support for empty constructors
-        this.trees.push(AvlNode());
-        this.deques.push(deque());
-      } else {
-        this.trees[0].insert(value);
-        this.deques[0].enqueue(value);
-      }
-    } else {
-      this.trees.push(AvlNode(value));
-      this.deques.push(deque(value));
+    var k = this.trees.length;
+    console.log('inserting ' + value);
+    console.log(k);
+    console.log(this.trees[k-1].size());
+    console.log(Math.pow(2, Math.pow(2, k)));
+    if (this.trees[k-1].size() >= Math.pow(2, Math.pow(2, k))) {
+      console.log('adding new trees');
+      // Need to add a new tree to the end to fit this element
+      this.trees.push(new AvlTree());
+      this.deques.push(new Deque());
+      k += 1;
     }
-    this.shift(0, this.deques.length -1);
+
+    this.trees[0].insert(value);
+    this.deques[0].pushToFront(new DequeNode(value));
+    
+    this.shift(0, k-1);
   }
 
   /**
@@ -618,10 +851,28 @@ class WorkingSetStructure {
   }
 }
 
-/*
+
 var workingSet = new WorkingSetStructure();
 
 workingSet.insert(5);
+workingSet.insert(10);
+workingSet.insert(15);
+workingSet.insert(0);
+workingSet.insert(20);
+workingSet.insert(19);
+workingSet.insert(21);
+workingSet.insert(4);
+workingSet.insert(6);
+workingSet.insert(2);
+workingSet.insert(3);
+workingSet.insert(1);
 console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
-*/
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+
+
+// 5 was correctly moved for deques,
+// not correctly moved for trees
