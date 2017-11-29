@@ -1,6 +1,6 @@
-// Draw an example AVL trees
 $(document).ready(function() {
-  console.log("hello");
+
+  // Draw example AVL tree.
   var rootNodeDemo = new AvlNode(10);
   rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12]);
   console.log(rootNodeDemo.toString());
@@ -16,6 +16,7 @@ $(document).ready(function() {
   var container = $('.container');
   container.append(dequeHtml);
   container.append(treeHtml);
+<<<<<<< HEAD
 });
 
 /** Get HTML for a deque */
@@ -37,6 +38,72 @@ function getDequeHtml(deque) {
 
   return mainDiv;
 }
+=======
+
+  // Initialize working set structure.
+  var workingSet = new WorkingSetStructure();
+  var userInput = null;
+
+  // Read value from user input field.
+  $("#user-input").change( function(){
+    userInput = $('#user-input').val();
+  });
+
+  // Insert operation.
+  $('#insert').click(function() {
+    // TODO: write getWorkingSetHtmlOverall once deques are available; then remove return
+    if (userInput) {
+      var helpText = "Do you want to insert " + userInput + "?";
+      var ans = confirm(helpText);
+      if (ans) {
+        console.log("Inserting", userInput)
+        workingSet.insert(userInput);
+        return;
+        var workingSetHtml = getWorkingSetHtmlOverall(workingSet);
+        // replace container class with new HTML
+        container.html(workingSetHtml);
+      }
+    }
+  });
+
+  // Delete operation.
+  $('#delete').click(function() {
+    // TODO: write getWorkingSetHtmlOverall once deques are available; then remove return
+    if (userInput) {
+      var helpText = "Do you want to delete " + userInput + "?";
+      var ans = confirm(helpText);
+      if (ans) {
+        console.log("Deleting", userInput)
+        var del = workingSet.delete(userInput);
+        return;
+        if (del) {
+          var workingSetHtml = getWorkingSetHtmlOverall(workingSet);
+          // replace container class with new HTML
+          container.html(workingSetHtml);
+        } else if (!del) {
+          var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
+          alert(helpText);
+        }
+      }
+    }
+  });
+
+  // Search operation.
+  $('#search').click(function() {
+    if (userInput) {
+      var item = workingSet.search(userInput);
+      if (item == null) {
+        var helpText = userInput + " is not in the working set structure.";
+      } else {
+        var helpText = userInput + " is in the working set structure.";
+      }
+      alert(helpText);
+    }
+  });
+});
+
+
+>>>>>>> 1ea2ab0cee035c51bd05d885eadecab793e7aa0a
 
 /** Get HTML for an entire tree */
 function getTreeHtmlOverall(rootNode) {
