@@ -161,9 +161,8 @@ function getChildHtml(child) {
 </div>
 */
 
-/** Get HTML for a deque */
+/** Get HTML for working set structure. */
 function getWorkingSetHtml(ws) {
-  // reset container class
   var mainDiv = document.createElement('div');
   for (var deque in ws.deques) {
     var dequeHtml = getDequeHtml(deque);
