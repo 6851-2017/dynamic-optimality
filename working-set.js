@@ -772,21 +772,6 @@ class WorkingSetStructure {
    * Insert value into the structure.
    */
   insert(value) {
-<<<<<<< HEAD
-    if (this.trees && this.deques) {
-      var k = this.trees.length;
-      if (this.trees[k-1].size = Math.pow(2, Math.pow(2, k))) {
-        // TODO need support for empty constructors
-        this.trees.push(AvlNode());
-        this.deques.push(deque());
-      } else {
-        this.trees[0].insert(value);
-        this.deques[0].enqueue(value);
-      }
-    } else {
-      this.trees.push(AvlNode(value));
-      this.deques.push(deque(value));
-=======
     var k = this.trees.length;
     console.log('inserting ' + value);
     console.log(k);
@@ -798,7 +783,6 @@ class WorkingSetStructure {
       this.trees.push(new AvlTree());
       this.deques.push(new Deque());
       k += 1;
->>>>>>> 1ea2ab0cee035c51bd05d885eadecab793e7aa0a
     }
 
     this.trees[0].insert(value);
