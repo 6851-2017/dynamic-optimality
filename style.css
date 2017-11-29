@@ -19,6 +19,31 @@ body {
     padding: 8;
 }
 
+.deque {
+  padding: 20px;
+}
+
+.dequeNode, .headNode {
+  -webkit-transition: all 0.5s;
+  padding: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin: 5px;
+  text-align: center;
+  border-radius: 5px;
+  border: solid 1px #ccc;
+  display: inline-block;
+}
+
+.headNode {
+  background-color: #ccc;
+}
+
+.dequeNode:hover {
+  -webkit-transition: all 0.5s;
+  background-color: #c8e4f8;
+}
+
 .tree ul {
     padding-top: 20px; position: relative;
     

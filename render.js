@@ -4,12 +4,39 @@ $(document).ready(function() {
   var rootNodeDemo = new AvlNode(10);
   rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12]);
   console.log(rootNodeDemo.toString());
-  
+  var dequeDemo = new Deque();
+  dequeDemo.pushToFront(new DequeNode(1));
+  dequeDemo.pushToFront(new DequeNode(2));
+  dequeDemo.pushToFront(new DequeNode(3));
+  dequeDemo.pushToBack(new DequeNode(0));
+  dequeDemo.pushToFront(new DequeNode(4));
+  dequeDemo.showDeque();
   var treeHtml = getTreeHtmlOverall(rootNodeDemo);
+  var dequeHtml = getDequeHtml(dequeDemo);
   var container = $('.container');
+  container.append(dequeHtml);
   container.append(treeHtml);
-
 });
+
+/** Get HTML for a deque */
+function getDequeHtml(deque) {
+  var mainDiv = document.createElement('div');
+  mainDiv.classList.add('deque');
+  var headNode = document.createElement('div');
+  headNode.classList.add('headNode');
+  headNode.appendChild(document.createTextNode("HEAD"));
+  mainDiv.appendChild(headNode); 
+  var currentNode = deque.first;
+  while (currentNode) {
+    var dequeNode = document.createElement('div');
+    dequeNode.classList.add('dequeNode');
+    dequeNode.appendChild(document.createTextNode(currentNode.value));
+    mainDiv.appendChild(dequeNode);
+    currentNode = currentNode.next;
+  }
+
+  return mainDiv;
+}
 
 /** Get HTML for an entire tree */
 function getTreeHtmlOverall(rootNode) {
