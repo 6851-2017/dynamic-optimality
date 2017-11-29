@@ -798,6 +798,7 @@ class WorkingSetStructure {
     var foundIndex = null;
     for (var i = 0; i < this.trees.length; i++) {
       var tree = this.trees[i];
+      // BUG-FIX: Maybe we want tree.rootNode.search instead?
       var exists = tree.search(value);
       if (exists != null) {
         tree.delete(value);
@@ -823,6 +824,7 @@ class WorkingSetStructure {
     var j = null;
     var node = null;
     for (var i = 0; i < this.trees.length; i++) {
+      // BUG-FIX: Maybe we want this.trees[i].rootNode.search instead?
       var foundNode = this.trees[i].search(value);
       if (foundNode) {
         j = i;
