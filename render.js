@@ -23,7 +23,7 @@ $(document).ready(function() {
 
   // Read value from user input field.
   $("#user-input").change( function(){
-    userInput = $('#user-input').val();
+    userInput = Number($('#user-input').val());
   });
 
   // Insert operation.
@@ -34,6 +34,7 @@ $(document).ready(function() {
       if (ans) {
         console.log("Inserting", userInput)
         workingSet.insert(userInput);
+        console.log(workingSet);
         var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
         container.html(workingSetHtml);
@@ -164,12 +165,12 @@ function getChildHtml(child) {
 /** Get HTML for working set structure. */
 function getWorkingSetHtml(ws) {
   var mainDiv = document.createElement('div');
-  for (var deque in ws.deques) {
-    var dequeHtml = getDequeHtml(deque);
+  for (var i = 0; i < ws.deques.length ; i++) {
+    var dequeHtml = getDequeHtml(ws.deques[i]);
     mainDiv.append(dequeHtml);
   }
-  for (var tree in ws.trees) {
-    var treeHtml = getTreeHtmlOverall(tree.rootNode);
+  for (var i = 0; i < ws.trees.length ; i++) {
+    var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
     mainDiv.append(treeHtml);
   }
   return mainDiv;
