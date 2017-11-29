@@ -16,29 +16,6 @@ $(document).ready(function() {
   var container = $('.container');
   container.append(dequeHtml);
   container.append(treeHtml);
-<<<<<<< HEAD
-});
-
-/** Get HTML for a deque */
-function getDequeHtml(deque) {
-  var mainDiv = document.createElement('div');
-  mainDiv.classList.add('deque');
-  var headNode = document.createElement('div');
-  headNode.classList.add('headNode');
-  headNode.appendChild(document.createTextNode("HEAD"));
-  mainDiv.appendChild(headNode); 
-  var currentNode = deque.first;
-  while (currentNode) {
-    var dequeNode = document.createElement('div');
-    dequeNode.classList.add('dequeNode');
-    dequeNode.appendChild(document.createTextNode(currentNode.value));
-    mainDiv.appendChild(dequeNode);
-    currentNode = currentNode.next;
-  }
-
-  return mainDiv;
-}
-=======
 
   // Initialize working set structure.
   var workingSet = new WorkingSetStructure();
@@ -103,7 +80,26 @@ function getDequeHtml(deque) {
 });
 
 
->>>>>>> 1ea2ab0cee035c51bd05d885eadecab793e7aa0a
+/** Get HTML for a deque */
+function getDequeHtml(deque) {
+  var mainDiv = document.createElement('div');
+  mainDiv.classList.add('deque');
+  var headNode = document.createElement('div');
+  headNode.classList.add('headNode');
+  headNode.appendChild(document.createTextNode("HEAD"));
+  mainDiv.appendChild(headNode); 
+  var currentNode = deque.first;
+  while (currentNode) {
+    var dequeNode = document.createElement('div');
+    dequeNode.classList.add('dequeNode');
+    dequeNode.appendChild(document.createTextNode(currentNode.value));
+    mainDiv.appendChild(dequeNode);
+    currentNode = currentNode.next;
+  }
+
+  return mainDiv;
+}
+
 
 /** Get HTML for an entire tree */
 function getTreeHtmlOverall(rootNode) {
