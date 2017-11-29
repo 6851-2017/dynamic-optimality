@@ -28,16 +28,14 @@ $(document).ready(function() {
 
   // Insert operation.
   $('#insert').click(function() {
-    // TODO: write getWorkingSetHtmlOverall once deques are available; then remove return
     if (userInput) {
       var helpText = "Do you want to insert " + userInput + "?";
       var ans = confirm(helpText);
       if (ans) {
         console.log("Inserting", userInput)
         workingSet.insert(userInput);
-        return;
-        var workingSetHtml = getWorkingSetHtmlOverall(workingSet);
-        // replace container class with new HTML
+        var workingSetHtml = getWorkingSetHtml(workingSet);
+        // Reset HTML
         container.html(workingSetHtml);
       }
     }
@@ -45,17 +43,15 @@ $(document).ready(function() {
 
   // Delete operation.
   $('#delete').click(function() {
-    // TODO: write getWorkingSetHtmlOverall once deques are available; then remove return
     if (userInput) {
       var helpText = "Do you want to delete " + userInput + "?";
       var ans = confirm(helpText);
       if (ans) {
         console.log("Deleting", userInput)
         var del = workingSet.delete(userInput);
-        return;
         if (del) {
-          var workingSetHtml = getWorkingSetHtmlOverall(workingSet);
-          // replace container class with new HTML
+          var workingSetHtml = getWorkingSetHtml(workingSet);
+          // Reset HTML
           container.html(workingSetHtml);
         } else if (!del) {
           var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
@@ -164,3 +160,18 @@ function getChildHtml(child) {
   </ul>             
 </div>
 */
+
+/** Get HTML for a deque */
+function getWorkingSetHtml(ws) {
+  // reset container class
+  var mainDiv = document.createElement('div');
+  for (var deque in ws.deques) {
+    var dequeHtml = getDequeHtml(deque);
+    mainDiv.append(dequeHtml);
+  }
+  for (var tree in ws.trees) {
+    var treeHtml = getTreeHtmlOverall(tree.rootNode);
+    mainDiv.append(treeHtml);
+  }
+  return mainDiv;
+}
