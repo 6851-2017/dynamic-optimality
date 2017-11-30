@@ -29,35 +29,26 @@ $(document).ready(function() {
   // Insert operation.
   $('#insert').click(function() {
     if (userInput) {
-      var helpText = "Do you want to insert " + userInput + "?";
-      var ans = confirm(helpText);
-      if (ans) {
-        console.log("Inserting", userInput)
-        workingSet.insert(userInput);
-        console.log(workingSet);
-        var workingSetHtml = getWorkingSetHtml(workingSet);
-        // Reset HTML
-        container.html(workingSetHtml);
-      }
+      console.log("Inserting", userInput)
+      workingSet.insert(userInput);
+      var workingSetHtml = getWorkingSetHtml(workingSet);
+      // Reset HTML
+      container.html(workingSetHtml);
     }
   });
 
   // Delete operation.
   $('#delete').click(function() {
     if (userInput) {
-      var helpText = "Do you want to delete " + userInput + "?";
-      var ans = confirm(helpText);
-      if (ans) {
-        console.log("Deleting", userInput)
-        var del = workingSet.delete(userInput);
-        if (del) {
-          var workingSetHtml = getWorkingSetHtml(workingSet);
-          // Reset HTML
-          container.html(workingSetHtml);
-        } else if (!del) {
-          var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
-          alert(helpText);
-        }
+      console.log("Deleting", userInput)
+      var del = workingSet.delete(userInput);
+      if (del) {
+        var workingSetHtml = getWorkingSetHtml(workingSet);
+        // Reset HTML
+        container.html(workingSetHtml);
+      } else if (!del) {
+        var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
+        alert(helpText);
       }
     }
   });
