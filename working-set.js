@@ -648,9 +648,7 @@ class AvlTree {
       return false;
     } else {
       var newRoot = this.rootNode.delete(value);
-      if (newRoot) {
-        this.rootNode = newRoot;
-      }
+      this.rootNode = newRoot;
     }
   }
 
@@ -789,7 +787,7 @@ class WorkingSetStructure {
           // This deque is empty, so just go to the previous deque
           continue;
         }
-        
+
         this.deques[i - 1].pushToBack(item);
         // delete the item from T_i and insert into T_i-1
         this.trees[i].delete(item.value);
@@ -936,7 +934,7 @@ workingSet.delete(4);
 console.log("after 4");
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
@@ -948,7 +946,20 @@ workingSet.delete(21);
 console.log("after 21");
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
+
+workingSet.insert(90);
+
+console.log("after 90");
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+
+// TODO: Bug with inserting 100 instead of 90:
+// seems to confuse 100 with 10?
