@@ -905,16 +905,53 @@ console.log(testNode.toString());
 
 var workingSet = new WorkingSetStructure();
 
-/* Tests for search */
+/* Tests for search 
 workingSet.insert(5);
 workingSet.insert(6);
 workingSet.search(5);
+workingSet.search(5);
+workingSet.search(5);
+workingSet.search(6);
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 //console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 //console.log(workingSet.deques[1].toString());
+
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.insert(3);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+
+workingSet.search(6);
+workingSet.search(5);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+
+workingSet.delete(2);
+
+workingSet.search(1);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+//console.log(workingSet.deques[1].toString());
+*/
+
 
 /* Tests for insert + delete 
 workingSet.insert(5);
