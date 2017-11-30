@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
   // Draw example AVL tree.
+  /*
   var rootNodeDemo = new AvlNode(10);
   rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12, 32, 77, 51, 20,27,1,17]);
   console.log(rootNodeDemo.toString());
@@ -13,9 +14,12 @@ $(document).ready(function() {
   dequeDemo.showDeque();
   var treeHtml = getTreeHtmlOverall(rootNodeDemo);
   var dequeHtml = getDequeHtml(dequeDemo);
+  */
   var container = $('.container');
+  /*
   container.append(dequeHtml);
   container.append(treeHtml);
+  */
 
   // Initialize working set structure.
   var workingSet = new WorkingSetStructure();
