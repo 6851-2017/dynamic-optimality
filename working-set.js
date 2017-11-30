@@ -858,7 +858,6 @@ class WorkingSetStructure {
     var j = null;
     var node = null;
     for (var i = 0; i < this.trees.length; i++) {
-      // BUG-FIX: Maybe we want this.trees[i].rootNode.search instead?
       var foundNode = this.trees[i].search(value);
       if (foundNode) {
         j = i;
@@ -867,23 +866,23 @@ class WorkingSetStructure {
       }
     }
 
-    if (!j) {
+    if (j == null) { // if j = 0, j will evaluate to false
       // value is not in the tree
       return null;
     }
 
     // Delete value from T_j
-    this.trees[j].delete(node);
-    // TODO: Delete it from deque j
+    this.trees[j].delete(node.value);
+    this.deques[j].findAndPop(node.value);
 
     // Insert value into T_1
-    this.trees[j].insert(node);
-    this.deques[j].enqueue(value);
+    this.trees[0].insert(node.value);
+    this.deques[0].pushToFront(new DequeNode(node.value));
 
     // Shift 1 -> j
-    this.shift(1, j);
+    this.shift(0, j);
 
-    return value;
+    return node.value;
   }
 }
 
@@ -905,6 +904,18 @@ console.log(testNode.toString());
 
 
 var workingSet = new WorkingSetStructure();
+
+/* Tests for search */
+workingSet.insert(5);
+workingSet.insert(6);
+workingSet.search(5);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+//console.log(workingSet.deques[1].toString());
+
 /* Tests for insert + delete 
 workingSet.insert(5);
 workingSet.insert(10);
@@ -986,3 +997,4 @@ console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 //console.log(workingSet.deques[1].toString());
 */
+
