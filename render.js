@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   // Draw example AVL tree.
   var rootNodeDemo = new AvlNode(10);
-  rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12]);
+  rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12, 32, 77, 51, 20,27,1,17]);
   console.log(rootNodeDemo.toString());
   var dequeDemo = new Deque();
   dequeDemo.pushToFront(new DequeNode(1));
