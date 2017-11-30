@@ -503,8 +503,8 @@ class AvlNode {
 
 /**
    * Delete the given value from this node's subtree.
-   * Returns thue if the value was in this node's
-   * subtree and false otherwise.
+   * Returns the new root of the tree if the value
+   * was in this node's subtree and false otherwise.
    */  
   delete(val) {
     console.log("deleting " + val + " from " + this.value);
@@ -516,6 +516,8 @@ class AvlNode {
   /**
    * Helper function for delete - carries out delete
    * operation, besides rebalancing.
+   * Returns the new root of the tree, or null if
+   * the delete is unsuccessful.
    */
   deleteHelper(val) {
     var node = this.search(val);
@@ -645,7 +647,10 @@ class AvlTree {
     if (!this.rootNode) {
       return false;
     } else {
-      return this.rootNode.delete(value);
+      var newRoot = this.rootNode.delete(value);
+      if (newRoot) {
+        this.rootNode = newRoot;
+      }
     }
   }
 
@@ -668,12 +673,14 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
+/*
 var n = new AvlNode(10);
 //n.insert(10);
 n.insert([5,1,7,15,12,18]);
 console.log(n.toString());
 nn = n.delete(10);
 console.log(nn.toString());
+*/
 
 /*
 var tree = new AvlTree();
@@ -876,17 +883,19 @@ testTree.insert(5);
 testTree.insert(10);
 console.log(testTree.delete(5));
 console.log(testTree.rootNode.toString());
+console.log(testTree.rootNode);
 */
 
+/*
 var testNode = new AvlNode(5);
 testNode.insert(10);
 testNode.delete(5);
 console.log(testNode.toString());
+*/
 
 
-/*
 var workingSet = new WorkingSetStructure();
-/*
+
 workingSet.insert(5);
 workingSet.insert(10);
 workingSet.insert(15);
@@ -945,6 +954,3 @@ console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
 */
-
-// 5 was correctly moved for deques,
-// not correctly moved for trees
