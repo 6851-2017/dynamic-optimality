@@ -462,7 +462,7 @@ class AvlNode {
       } else {
         this.rightChild = new AvlNode(val);
         this.rightChild.parent = this;
-        this.updateHeightsAndSizes();
+        this.updateToRoot();
         //this.rebalancePath();
       }
     } else if (this.value > val) {
@@ -471,11 +471,11 @@ class AvlNode {
       } else {
         this.leftChild = new AvlNode(val);
         this.leftChild.parent = this;
-        this.updateHeightsAndSizes();
+        this.updateToRoot();
         //this.rebalancePath();
       }
     }
-    this.rebalance();
+    //this.rebalance();
   }
 
   /**
@@ -486,13 +486,13 @@ class AvlNode {
    */
   rebalancePath() {
     return;
-    /*
+    /*    
     var x = this;
     while (x != null) {
       x.rebalance();
       x = x.parent;
     }
-    */
+    */ 
   }
 
   /**
@@ -501,15 +501,17 @@ class AvlNode {
    * to account for those operations modifying the heights of
    * subtrees.
    */
-  updateHeightsAndSizes() {
+  updateToRoot() {
     var x = this;
     while (x != null) {
+      console.log(x.value);
       var rightHeight = (x.rightChild != null) ? x.rightChild.height : 0;
       var leftHeight = (x.leftChild != null) ? x.leftChild.height : 0;
       var rightSize = (x.rightChild != null) ? x.rightChild.size : 0;
       var leftSize = (x.leftChild != null) ? x.leftChild.size : 0;
       x.height = Math.max(rightHeight, leftHeight) + 1;
       x.size = rightSize + leftSize + 1;
+      x.rebalance();
       x = x.parent;
     }
   }
@@ -556,8 +558,8 @@ class AvlNode {
       returnNode = node.replaceWith(null);
     }
     if (parent != null) { 
-      parent.updateHeightsAndSizes(); 
-      parent.rebalancePath();
+      parent.updateToRoot(); 
+      //parent.rebalancePath();
     }
     if (deletingRoot == true) {
       return returnNode; 
@@ -684,9 +686,22 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
+/*
 var n = new AvlNode(9);
-n.insert([6,5,2,3,13,12,15,14]);
+n.insert([4, 15, 3, 6, 12, 2]);
 console.log(n.toString());
+n.delete(6);
+console.log(n.toString());
+n.insert(11);
+console.log(n.toString());
+n.insert(1);
+console.log(n.toString());
+n.delete(11);
+console.log(n.toString());
+n.delete(15);
+console.log(n.toString());
+*/
+
 /*
 var n = new AvlNode(10);
 //n.insert(10);
@@ -698,14 +713,16 @@ console.log(nn.toString());
 
 /*
 var tree = new AvlTree();
-var toInsert = [5, 4, 3, 2, 1];//, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
+var toInsert = [5, 4, 3, 2, 1, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
 tree.insert(toInsert);
 console.log("did the insert");
 console.log(tree.rootNode.size);
 console.log(tree.rootNode.toString());
 console.log("done");
 // TODO: Doesn't look balanced here
+*/
 
+/*
 tree.delete(2);
 tree.delete(5);
 console.log(tree.rootNode.size);
