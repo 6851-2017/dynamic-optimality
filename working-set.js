@@ -785,6 +785,11 @@ class WorkingSetStructure {
       for (var i = h; i > j; i--) {
         // deque and item from Q_i, and enqueue the item into Q_i-1
         var item = this.deques[i].popFromFront();
+        if (!item) {
+          // This deque is empty, so just go to the previous deque
+          continue;
+        }
+        
         this.deques[i - 1].pushToBack(item);
         // delete the item from T_i and insert into T_i-1
         this.trees[i].delete(item.value);
@@ -923,34 +928,27 @@ workingSet.delete(19);
 workingSet.delete(20);
 workingSet.delete(0);
 
-console.log("before 5");
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-
 workingSet.delete(5);
 
-console.log("after 5");
+
+workingSet.delete(4);
+
+console.log("after 4");
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
-/*
-workingSet.delete(4);
 
 
 
 workingSet.delete(21);
 
+console.log("after 21");
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
-*/
