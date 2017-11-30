@@ -117,7 +117,6 @@ class Deque {
     }
   }
 
-  // TODO: Find
   /**
    * Finds value in the deque and removes it.
    * Returns the node with that value, or null
@@ -289,7 +288,7 @@ class AvlNode {
     var leftSize = (this.rightChild.leftChild != null) ? this.rightChild.leftChild.size : 0;
     this.rightChild.size = rightSize + leftSize + 1;
     rightSize = (this.rightChild != null) ? this.rightChild.size : 0;
-    leftSize = (this.rightChild != null) ? this.leftChild.size : 0;
+    leftSize = (this.leftChild != null) ? this.leftChild.size : 0;
     this.size = rightSize + leftSize + 1;
     // not sure if the following is necessary...
     if (this.parent != null) {
@@ -504,7 +503,7 @@ class AvlNode {
 
 /**
    * Delete the given value from this node's subtree.
-   * Returns true if the value was in this node's
+   * Returns thue if the value was in this node's
    * subtree and false otherwise.
    */  
   delete(val) {
@@ -639,6 +638,14 @@ class AvlTree {
     }
   }
 
+  search(value) {
+    if (!this.rootNode) {
+      return false;
+    } else {
+      return this.rootNode.search(value);
+    }
+  }
+
   size() {
     if (!this.rootNode) {
       return 0;
@@ -742,14 +749,11 @@ class WorkingSetStructure {
   shift(h, j) {
     if (h < j) {
       for (var i = h; i < j; i++) {
-        console.log("h < j");
         // deque and item from Q_i, and enqueue the item into Q_i+1
         var item = this.deques[i].popFromBack();
         this.deques[i + 1].pushToFront(item);
         // delete the item from T_i and insert into T_i+1
-        console.log(this.trees[i].rootNode.toString());
         this.trees[i].delete(item.value);
-        console.log(this.trees[i].rootNode.toString());
         this.trees[i + 1].insert(item.value);
       }
     } else if (j < h) {
@@ -773,12 +777,7 @@ class WorkingSetStructure {
    */
   insert(value) {
     var k = this.trees.length;
-    console.log('inserting ' + value);
-    console.log(k);
-    console.log(this.trees[k-1].size());
-    console.log(Math.pow(2, Math.pow(2, k)));
     if (this.trees[k-1].size() >= Math.pow(2, Math.pow(2, k))) {
-      console.log('adding new trees');
       // Need to add a new tree to the end to fit this element
       this.trees.push(new AvlTree());
       this.deques.push(new Deque());
@@ -802,7 +801,7 @@ class WorkingSetStructure {
       if (exists != null) {
         tree.delete(value);
         foundIndex = i;
-        this.deques[i].remove(value);
+        this.deques[i].findAndPop(value);
         break;
       }
     }
@@ -851,7 +850,21 @@ class WorkingSetStructure {
   }
 }
 
+/*
+var testTree = new AvlTree();
+testTree.insert(5);
+testTree.insert(10);
+console.log(testTree.delete(5));
+console.log(testTree.rootNode.toString());
+*/
 
+var testNode = new AvlNode(5);
+testNode.insert(10);
+testNode.delete(5);
+console.log(testNode.toString());
+
+
+/*
 var workingSet = new WorkingSetStructure();
 
 workingSet.insert(5);
@@ -866,12 +879,52 @@ workingSet.insert(6);
 workingSet.insert(2);
 workingSet.insert(3);
 workingSet.insert(1);
+
+
+workingSet.delete(15);
+
+
+workingSet.delete(2);
+
+
+workingSet.delete(1);
+
+
+workingSet.delete(19);
+workingSet.delete(20);
+workingSet.delete(0);
+
+console.log("before 5");
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
+
+workingSet.delete(5);
+
+console.log("after 5");
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+/*
+workingSet.delete(4);
+
+
+
+workingSet.delete(21);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+*/
 
 
 // 5 was correctly moved for deques,
