@@ -1,8 +1,9 @@
 $(document).ready(function() {
 
   // Draw example AVL tree.
+  /*
   var rootNodeDemo = new AvlNode(10);
-  rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12]);
+  rootNodeDemo.insert([5, 3, 2, 6, 9, 15, 12, 32, 77, 51, 20,27,1,17]);
   console.log(rootNodeDemo.toString());
   var dequeDemo = new Deque();
   dequeDemo.pushToFront(new DequeNode(1));
@@ -13,9 +14,12 @@ $(document).ready(function() {
   dequeDemo.showDeque();
   var treeHtml = getTreeHtmlOverall(rootNodeDemo);
   var dequeHtml = getDequeHtml(dequeDemo);
+  */
   var container = $('.container');
+  /*
   container.append(dequeHtml);
   container.append(treeHtml);
+  */
 
   // Initialize working set structure.
   var workingSet = new WorkingSetStructure();
@@ -29,35 +33,26 @@ $(document).ready(function() {
   // Insert operation.
   $('#insert').click(function() {
     if (userInput) {
-      var helpText = "Do you want to insert " + userInput + "?";
-      var ans = confirm(helpText);
-      if (ans) {
-        console.log("Inserting", userInput)
-        workingSet.insert(userInput);
-        console.log(workingSet);
-        var workingSetHtml = getWorkingSetHtml(workingSet);
-        // Reset HTML
-        container.html(workingSetHtml);
-      }
+      console.log("Inserting", userInput)
+      workingSet.insert(userInput);
+      var workingSetHtml = getWorkingSetHtml(workingSet);
+      // Reset HTML
+      container.html(workingSetHtml);
     }
   });
 
   // Delete operation.
   $('#delete').click(function() {
     if (userInput) {
-      var helpText = "Do you want to delete " + userInput + "?";
-      var ans = confirm(helpText);
-      if (ans) {
-        console.log("Deleting", userInput)
-        var del = workingSet.delete(userInput);
-        if (del) {
-          var workingSetHtml = getWorkingSetHtml(workingSet);
-          // Reset HTML
-          container.html(workingSetHtml);
-        } else if (!del) {
-          var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
-          alert(helpText);
-        }
+      console.log("Deleting", userInput)
+      var del = workingSet.delete(userInput);
+      if (del) {
+        var workingSetHtml = getWorkingSetHtml(workingSet);
+        // Reset HTML
+        container.html(workingSetHtml);
+      } else if (!del) {
+        var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
+        alert(helpText);
       }
     }
   });

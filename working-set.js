@@ -235,12 +235,13 @@ class AvlNode {
         // R:
         if (heightA >= heightB && heightA >= heightC) {
           this.rotateR();
-          this.parent = null;
+          //this.parent = null;
         }
         // LR: 
         else if (heightB >= heightA && heightB >= heightC) {
           this.rotateLR();
-          this.parent = null;}
+          //this.parent = null;
+        }
       }
       // L and RL rotations
       else if (factor < -1) {
@@ -250,11 +251,13 @@ class AvlNode {
         // L:
         if (heightA >= heightB && heightA >= heightC) {
           this.rotateL();
-          this.parent = null;}
+          //this.parent = null;
+        }
         // RL:
         else if (heightB >= heightA && heightB >= heightC) {
           this.rotateRL();
-          this.parent = null;}
+          //this.parent = null;
+        }
       }
     }
   }
@@ -267,9 +270,11 @@ class AvlNode {
     // rotation
     var temp = this.copy();
     this.updateRoot(temp.leftChild);
+    /*
     if (this.parent != null) {
       this.parent.rightChild = this
     }
+    */
     temp.leftChild = this.rightChild;
     if (temp.leftChild != null) {
       temp.leftChild.parent = temp;
@@ -291,20 +296,24 @@ class AvlNode {
     leftSize = (this.leftChild != null) ? this.leftChild.size : 0;
     this.size = rightSize + leftSize + 1;
     // not sure if the following is necessary...
+    /*
     if (this.parent != null) {
       rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
       leftHeight = (this.parent.leftChild != null) ? this.parent.leftChild.height : 0;
       this.parent.height = Math.max(rightHeight, leftHeight) + 1
     }
+    */ 
   }
 
   rotateL() {
     // rotation
     var temp = this.copy();
     this.updateRoot(temp.rightChild);
+    /*
     if (this.parent != null) {
       this.parent.leftChild = this
     }
+    */
     temp.rightChild = this.leftChild;
     if (temp.rightChild != null) {
       temp.rightChild.parent = temp;
@@ -326,11 +335,13 @@ class AvlNode {
     leftSize = (this.leftChild != null) ? this.leftChild.size : 0;
     this.size = rightSize + leftSize + 1;
     // not sure if the following is necessary...
+    /*
     if (this.parent != null) {
       rightHeight = (this.parent.rightChild != null) ? this.parent.rightChild.height : 0;
       leftHeight = (this.parent.leftChild != null) ? this.parent.leftChild.height : 0;
       this.parent.height = Math.max(rightHeight, leftHeight) + 1
     }
+    */
   }
 
   rotateLR() {
@@ -430,7 +441,7 @@ class AvlNode {
   insert(val) {
     if (typeof val == 'number') {
       this.insertHelper(val);
-      this.rebalance();
+      //this.rebalance();
     } else {
       for (var i = 0; i < val.length; i ++) {
         this.insert(val[i]);
@@ -452,7 +463,7 @@ class AvlNode {
         this.rightChild = new AvlNode(val);
         this.rightChild.parent = this;
         this.updateHeightsAndSizes();
-        this.rebalancePath();
+        //this.rebalancePath();
       }
     } else if (this.value > val) {
       if (this.leftChild != null) {
@@ -461,9 +472,10 @@ class AvlNode {
         this.leftChild = new AvlNode(val);
         this.leftChild.parent = this;
         this.updateHeightsAndSizes();
-        this.rebalancePath();
+        //this.rebalancePath();
       }
     }
+    this.rebalance();
   }
 
   /**
@@ -672,6 +684,9 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
+var n = new AvlNode(9);
+n.insert([6,5,2,3,13,12,15,14]);
+console.log(n.toString());
 /*
 var n = new AvlNode(10);
 //n.insert(10);
