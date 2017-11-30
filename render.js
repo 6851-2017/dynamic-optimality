@@ -65,6 +65,9 @@ $(document).ready(function() {
         var helpText = userInput + " is not in the working set structure.";
       } else {
         var helpText = userInput + " is in the working set structure.";
+        var workingSetHtml = getWorkingSetHtml(workingSet);
+        // Reset HTML
+        container.html(workingSetHtml);
       }
       alert(helpText);
     }

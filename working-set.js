@@ -934,7 +934,7 @@ console.log(testNode.toString());
 var workingSet = new WorkingSetStructure();
 
 /* Test for search that was failing for Smriti 
-   Currently passes for Caitlin */
+   Currently passes for Caitlin 
 
 workingSet.insertAll([2, 4, 1, 5, 10, 12]);
 /*
@@ -944,7 +944,7 @@ workingSet.insert(1);
 workingSet.insert(5);
 workingSet.insert(10);
 workingSet.insert(12);
-*/
+
 
 workingSet.search(2);
 console.log(workingSet.trees);
