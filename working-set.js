@@ -393,6 +393,7 @@ class AvlNode {
       i++;
       var value = "_".repeat(max_chars)+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       if (node != null && node.value != null) {
+        // TODO: Don't think this can handle 3-digit numbers like 100
         value = "_".repeat(max_chars - node.value.toString().length)+node.value.toString()+" ".repeat((Math.pow(2, this.height-level+1)-1)*max_chars);
       }
       if (l != level) {
@@ -805,7 +806,7 @@ class WorkingSetStructure {
    */
   insert(value) {
     var k = this.trees.length;
-    if (this.trees[k-1].size() >= Math.pow(2, Math.pow(2, k))) {
+    if (k == 0 || this.trees[k-1].size() >= Math.pow(2, Math.pow(2, k))) {
       // Need to add a new tree to the end to fit this element
       this.trees.push(new AvlTree());
       this.deques.push(new Deque());
@@ -825,7 +826,6 @@ class WorkingSetStructure {
     var foundIndex = null;
     for (var i = 0; i < this.trees.length; i++) {
       var tree = this.trees[i];
-      // BUG-FIX: Maybe we want tree.rootNode.search instead?
       var exists = tree.search(value);
       if (exists != null) {
         tree.delete(value);
@@ -836,6 +836,13 @@ class WorkingSetStructure {
     }
     if (foundIndex != null) {
       this.shift(this.deques.length - 1, foundIndex);
+
+      if (this.trees[this.trees.length - 1].size() == 0) {
+        // We emptied the last one, so remove it
+        this.trees.pop();
+        this.deques.pop();
+      }
+
       return true;
     } else {
       return false;
@@ -898,7 +905,7 @@ console.log(testNode.toString());
 
 
 var workingSet = new WorkingSetStructure();
-
+/* Tests for insert + delete 
 workingSet.insert(5);
 workingSet.insert(10);
 workingSet.insert(15);
@@ -914,21 +921,12 @@ workingSet.insert(1);
 
 
 workingSet.delete(15);
-
-
 workingSet.delete(2);
-
-
 workingSet.delete(1);
-
-
 workingSet.delete(19);
 workingSet.delete(20);
 workingSet.delete(0);
-
 workingSet.delete(5);
-
-
 workingSet.delete(4);
 
 console.log("after 4");
@@ -937,29 +935,54 @@ console.log(workingSet.trees[0].rootNode.toString());
 //console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
+//console.log(workingSet.deques[1].toString());
 
-
+// still left: 10, 21, 6, 3
 
 workingSet.delete(21);
 
-console.log("after 21");
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-
 workingSet.insert(90);
 
-console.log("after 90");
+workingSet.insert(80);
+
+workingSet.delete(80);
+// Should be 90, 3, 6, 10
+
 console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 //console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
+//console.log(workingSet.deques[1].toString());
 
-// TODO: Bug with inserting 100 instead of 90:
-// seems to confuse 100 with 10?
+workingSet.delete(10);
+workingSet.delete(6);
+workingSet.delete(3);
+workingSet.delete(90);
+
+console.log(workingSet.trees);
+//console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+//console.log(workingSet.deques[0].toString());
+//console.log(workingSet.deques[1].toString());
+
+workingSet.insert(4);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+//console.log(workingSet.deques[1].toString());
+
+workingSet.insert(5);
+workingSet.insert(6);
+
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+//console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+//console.log(workingSet.deques[1].toString());
+*/
