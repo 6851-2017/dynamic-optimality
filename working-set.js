@@ -802,6 +802,19 @@ class WorkingSetStructure {
   //
 
   /**
+   * Insert each value in the values array into the structure.
+   * The first item in the array will be the earliest-accessed
+   * item, and the last item will be the most recently
+   * accessed item.
+   */
+  insertAll(values) {
+    var that = this;
+    values.forEach(function(value) {
+      that.insert(value);
+    })
+  }
+
+  /**
    * Insert value into the structure.
    */
   insert(value) {
@@ -904,6 +917,27 @@ console.log(testNode.toString());
 
 
 var workingSet = new WorkingSetStructure();
+
+/* Test for search that was failing for Smriti 
+   Currently passes for Caitlin */
+
+workingSet.insertAll([2, 4, 1, 5, 10, 12]);
+/*
+workingSet.insert(2);
+workingSet.insert(4);
+workingSet.insert(1);
+workingSet.insert(5);
+workingSet.insert(10);
+workingSet.insert(12);
+*/
+
+workingSet.search(2);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
 
 /* Tests for search 
 workingSet.insert(5);
