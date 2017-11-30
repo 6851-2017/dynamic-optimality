@@ -520,26 +520,36 @@ class AvlNode {
    */
   deleteHelper(val) {
     var node = this.search(val);
+    var deletingRoot = false;
+    var returnNode;
     if (node == null) {
-      return false;
+      return null;
+    }
+    if (node == this) {
+      deletingRoot = true;
     }
     var parent = node.parent;
     if (node.leftChild != null && node.rightChild != null) {
       var succ = node.successor();
       node.value = succ.value;
       succ.deleteHelper(succ.value);
+      returnNode = node;
     } else if (node.leftChild != null) {
-      node.replaceWith(node.leftChild);
+      returnNode = node.replaceWith(node.leftChild);
     } else if (node.rightChild != null) {
-      node.replaceWith(node.rightChild);
+      returnNode = node.replaceWith(node.rightChild);
     } else {
-      node.replaceWith(null);
+      returnNode = node.replaceWith(null);
     }
     if (parent != null) { 
       parent.updateHeightsAndSizes(); 
       parent.rebalancePath();
     }
-    return true;
+    if (deletingRoot == true) {
+      return returnNode; 
+    } else {
+      return this;
+    }
   }
 
   /**
@@ -586,6 +596,7 @@ class AvlNode {
         this.parent = null;
       }
     }
+    return newNode;
   }
 
   /**
@@ -650,6 +661,13 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
+var n = new AvlNode(10);
+//n.insert(10);
+n.insert([5,1,7,15,12,18]);
+console.log(n.toString());
+nn = n.delete(10);
+console.log(nn.toString());
+
 /*
 var tree = new AvlTree();
 var toInsert = [5, 4, 3, 2, 1];//, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
@@ -855,7 +873,7 @@ class WorkingSetStructure {
 
 
 var workingSet = new WorkingSetStructure();
-
+/*
 workingSet.insert(5);
 workingSet.insert(10);
 workingSet.insert(15);
@@ -874,7 +892,7 @@ console.log(workingSet.trees[1].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
 console.log(workingSet.deques[1].toString());
-
+*/
 
 // 5 was correctly moved for deques,
 // not correctly moved for trees
