@@ -158,6 +158,7 @@ class Deque {
   }
 }
 
+
 // Demonstration
 /*
 console.log("deque testing");
@@ -455,7 +456,7 @@ class AvlNode {
    */
   insertHelper(val) {
     if (this.value == val) {
-      throw new Error("value already exists in tree");
+      throw new Error("value " + val + " already exists in tree");
     } else if (this.value < val) {
       if (this.rightChild != null) {
         this.rightChild.insertHelper(val);
@@ -520,7 +521,6 @@ class AvlNode {
    * was in this node's subtree and false otherwise.
    */  
   delete(val) {
-    console.log("deleting " + val + " from " + this.value);
     var r = this.deleteHelper(val);
     this.rebalance();
     return r;
@@ -684,9 +684,11 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
+/*
 var n = new AvlNode(9);
 n.insert([6,5,2,3,13,12,15,14]);
 console.log(n.toString());
+*/
 /*
 var n = new AvlNode(10);
 //n.insert(10);
@@ -790,7 +792,7 @@ class WorkingSetStructure {
       for (var i = h; i < j; i++) {
         // deque and item from Q_i, and enqueue the item into Q_i+1
         var item = this.deques[i].popFromBack();
-        this.deques[i + 1].pushToFront(item);
+        this.deques[i + 1].pushToFront(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i+1
         this.trees[i].delete(item.value);
         this.trees[i + 1].insert(item.value);
@@ -804,7 +806,7 @@ class WorkingSetStructure {
           continue;
         }
 
-        this.deques[i - 1].pushToBack(item);
+        this.deques[i - 1].pushToBack(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i-1
         this.trees[i].delete(item.value);
         this.trees[i - 1].insert(item.value);
@@ -830,9 +832,18 @@ class WorkingSetStructure {
   }
 
   /**
-   * Insert value into the structure.
+   * Insert value into the structure. Does not insert
+   *   the value if it's already in the structure.
    */
   insert(value) {
+    // Don't allow insertion of duplicate values.
+    for (var i = 0; i < this.trees.length; i++) {
+      var foundNode = this.trees[i].search(value);
+      if (foundNode) {
+        return;
+      }
+    }
+
     var k = this.trees.length;
     if (k == 0 || this.trees[k-1].size() >= Math.pow(2, Math.pow(2, k))) {
       // Need to add a new tree to the end to fit this element
@@ -928,10 +939,29 @@ var testNode = new AvlNode(5);
 testNode.insert(10);
 testNode.delete(5);
 console.log(testNode.toString());
-*/
 
 
+
+
+/* Test double inserts 
+console.log("WORKING SET");
 var workingSet = new WorkingSetStructure();
+
+workingSet.insertAll([3, 4, 5, 6, 7]);
+//workingSet.insert(3);
+//workingSet.insert(6);
+workingSet.insert(8);
+//workingSet.insert(4);
+workingSet.search(4);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+console.log(workingSet.deques[1])
+
+
 
 /* Test for search that was failing for Smriti 
    Currently passes for Caitlin 
