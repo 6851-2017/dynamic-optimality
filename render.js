@@ -6,7 +6,10 @@
  * Source: https://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
  */
 jQuery.fn.insertAt = function(index, element) {
-  var lastIndex = this.children().size();
+  console.log(this);
+  console.log(this.children());
+  console.log(this.children().length);
+  var lastIndex = this.children().length;
   if (index < 0) {
     index = Math.max(0, lastIndex + 1 + index);
   }
@@ -54,6 +57,8 @@ $(document).ready(function() {
     if (userInput) {
       console.log("Inserting", userInput)
       workingSet.insert(userInput);
+
+
       var workingSetHtml = getWorkingSetHtml(workingSet);
       // Reset HTML
       container.html(workingSetHtml);
@@ -81,31 +86,46 @@ $(document).ready(function() {
     if (userInput) {
       var item = workingSet.search(userInput);
       if (item == null) {
-        var helpText = userInput + " is not in the working set structure.";
+        alert(userInput + " is not in the structure.");
       } else {
-        var helpText = userInput + " is in the working set structure.";
-        var workingSetHtml = getWorkingSetHtml(workingSet);
+        // Move element to beginning of deque
+        var dequeElement = $('#deque-' + userInput);
+        var newParent = $('#deques').children()[0];
+        // The 'HEAD' block is the fist child, so insert at 1
+        moveAnimate(dequeElement, newParent, 1); 
+
+        //var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
-        container.html(workingSetHtml);
+        //container.html(workingSetHtml);
       }
-      alert(helpText);
     }
   });
 });
 
 /**
  * Moves the given element from its current position to be
- * a child of the newParent.
+ * a child of the newParent. It will become the index-th child
+ * of the parent.
  * Source: https://stackoverflow.com/questions/907279/jquery-animate-moving-dom-element-to-new-parent
  */
-function moveAnimate(element, newParent) {
+function moveAnimate(element, newParent, index) {
     //Allow passing in either a jQuery object or selector
     element = $(element);
     newParent= $(newParent);
 
+    var elementMarginTop = parseInt(element.css('marginTop'));
+    var elementMarginLeft = parseInt(element.css('marginLeft'));
+
     var oldOffset = element.offset();
-    element.appendTo(newParent);
+    newParent.insertAt(index, element);
+    //element.appendTo(newParent);
     var newOffset = element.offset();
+
+    // Account for margins
+    oldOffset.top -= elementMarginTop;
+    oldOffset.left -= elementMarginLeft;
+    newOffset.top -= elementMarginTop;
+    newOffset.left -= elementMarginLeft;
 
     var temp = element.clone().appendTo('body');
     temp.css({
@@ -114,11 +134,24 @@ function moveAnimate(element, newParent) {
         'top': oldOffset.top,
         'z-index': 1000
     });
+
+    //var temp2 = temp.clone().appendTo('body');
+
     element.hide();
-    temp.animate({'top': newOffset.top, 'left': newOffset.left}, 'slow', function(){
+    temp.animate({'top': newOffset.top, 'left': newOffset.left}, 'slow', 'linear', function(){
        element.show();
        temp.remove();
     });
+
+    // TODO: Need other elements in deque to shift over
+    // TODO: Doesn't seem to get all the way over
+    // before showing and removing the temp?
+
+    console.log("newoffset:");
+    console.log(newOffset);
+
+    console.log("oldoffset:");
+    console.log(oldOffset);
 }
 
 
@@ -134,7 +167,9 @@ function getDequeHtml(deque) {
   while (currentNode) {
     var dequeNode = document.createElement('div');
     dequeNode.classList.add('dequeNode');
+    dequeNode.setAttribute('id', 'deque-' + currentNode.value);
     dequeNode.appendChild(document.createTextNode(currentNode.value));
+
     mainDiv.appendChild(dequeNode);
     currentNode = currentNode.next;
   }
@@ -212,7 +247,7 @@ function getWorkingSetHtml(ws) {
   var mainDiv = document.createElement('div');
 
   var dequesDiv = document.createElement('div');
-  dequesDiv.classList.add('deques');
+  dequesDiv.setAttribute('id', 'deques');
   for (var i = 0; i < ws.deques.length ; i++) {
     var dequeHtml = getDequeHtml(ws.deques[i]);
     dequesDiv.append(dequeHtml);
@@ -220,7 +255,7 @@ function getWorkingSetHtml(ws) {
   mainDiv.append(dequesDiv);
 
   var treesDiv = document.createElement('div');
-  treesDiv.classList.add('trees');
+  treesDiv.setAttribute('id', 'trees');
   for (var i = 0; i < ws.trees.length ; i++) {
     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
     treesDiv.append(treeHtml);
