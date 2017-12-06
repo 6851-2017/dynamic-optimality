@@ -1,3 +1,22 @@
+/**
+ * Inserts the given element as the index-th child
+ * of the object selected.
+ *
+ * Example usage: $("#controller").insertAt(1, "<div>insert at second position</div>");
+ * Source: https://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
+ */
+jQuery.fn.insertAt = function(index, element) {
+  var lastIndex = this.children().size();
+  if (index < 0) {
+    index = Math.max(0, lastIndex + 1 + index);
+  }
+  this.append(element);
+  if (index < lastIndex) {
+    this.children().eq(index).before(this.children().last());
+  }
+  return this;
+}
+
 $(document).ready(function() {
 
   // Draw example AVL tree.
@@ -73,6 +92,34 @@ $(document).ready(function() {
     }
   });
 });
+
+/**
+ * Moves the given element from its current position to be
+ * a child of the newParent.
+ * Source: https://stackoverflow.com/questions/907279/jquery-animate-moving-dom-element-to-new-parent
+ */
+function moveAnimate(element, newParent) {
+    //Allow passing in either a jQuery object or selector
+    element = $(element);
+    newParent= $(newParent);
+
+    var oldOffset = element.offset();
+    element.appendTo(newParent);
+    var newOffset = element.offset();
+
+    var temp = element.clone().appendTo('body');
+    temp.css({
+        'position': 'absolute',
+        'left': oldOffset.left,
+        'top': oldOffset.top,
+        'z-index': 1000
+    });
+    element.hide();
+    temp.animate({'top': newOffset.top, 'left': newOffset.left}, 'slow', function(){
+       element.show();
+       temp.remove();
+    });
+}
 
 
 /** Get HTML for a deque */
@@ -163,13 +210,22 @@ function getChildHtml(child) {
 /** Get HTML for working set structure. */
 function getWorkingSetHtml(ws) {
   var mainDiv = document.createElement('div');
+
+  var dequesDiv = document.createElement('div');
+  dequesDiv.classList.add('deques');
   for (var i = 0; i < ws.deques.length ; i++) {
     var dequeHtml = getDequeHtml(ws.deques[i]);
-    mainDiv.append(dequeHtml);
+    dequesDiv.append(dequeHtml);
   }
+  mainDiv.append(dequesDiv);
+
+  var treesDiv = document.createElement('div');
+  treesDiv.classList.add('trees');
   for (var i = 0; i < ws.trees.length ; i++) {
     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
-    mainDiv.append(treeHtml);
+    treesDiv.append(treeHtml);
   }
+  mainDiv.append(treesDiv);
+
   return mainDiv;
 }
