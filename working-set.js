@@ -505,7 +505,6 @@ class AvlNode {
   updateToRoot() {
     var x = this;
     while (x != null) {
-      console.log(x.value);
       var rightHeight = (x.rightChild != null) ? x.rightChild.height : 0;
       var leftHeight = (x.leftChild != null) ? x.leftChild.height : 0;
       var rightSize = (x.rightChild != null) ? x.rightChild.size : 0;
@@ -630,6 +629,28 @@ class AvlNode {
     } else {
       return null;
     }
+  }
+
+
+  toStringJustMe() {
+    var totalString = 'node toStringJustMe;';
+    totalString += 'val:' + this.value;
+    if (this.parent) {
+      totalString += 'parentVal:' + this.parent.value + ';';
+    } else {
+      totalString += "no parent;";
+    }
+    if (this.leftChild) {
+      totalString += 'leftChildVal:' + this.leftChild.value + ';';
+    } else {
+      totalString += "no left child;";
+    }
+    if (this.rightChild) {
+      totalString += 'rightChildVal:' + this.rightChild.value + ';';
+    } else {
+      totalString += "no right child;";
+    }
+    return totalString;
   }
 
 }
@@ -909,6 +930,7 @@ class WorkingSetStructure {
    * Returns null if the value isn't in the structure.
    */ 
   search(value) {
+
     // Go through trees and search for value
     var j = null;
     var node = null;
@@ -927,12 +949,12 @@ class WorkingSetStructure {
     }
 
     // Delete value from T_j
-    this.trees[j].delete(node.value);
-    this.deques[j].findAndPop(node.value);
+    this.trees[j].delete(value);
+    this.deques[j].findAndPop(value);
 
     // Insert value into T_1
-    this.trees[0].insert(node.value);
-    this.deques[0].pushToFront(new DequeNode(node.value));
+    this.trees[0].insert(value);
+    this.deques[0].pushToFront(new DequeNode(value));
 
     // Shift 1 -> j
     this.shift(0, j);
@@ -940,6 +962,20 @@ class WorkingSetStructure {
     return node.value;
   }
 }
+
+/** Test for found bug */
+console.log("BUG TEST");
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.search(1);
+workingSet.insert(3);
+workingSet.search(2);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+
 
 /*
 var testTree = new AvlTree();
