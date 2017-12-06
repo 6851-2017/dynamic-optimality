@@ -132,20 +132,35 @@ function moveAnimate(element, newParent, index) {
         'position': 'absolute',
         'left': oldOffset.left,
         'top': oldOffset.top,
-        'z-index': 1000
+        'z-index': 1000,
     });
 
-    //var temp2 = temp.clone().appendTo('body');
+/*
+    var temp2 = temp.clone().appendTo('body');
+    temp2.css('color', 'red');
+    var temp3 = element.clone().appendTo('body');
+    temp3.css({
+        'position': 'absolute',
+        'left': newOffset.left,
+        'top': newOffset.top,
+        'z-index': -10,
+        'color': 'green'
+    });
+    */
 
     element.hide();
     temp.animate({'top': newOffset.top, 'left': newOffset.left}, 'slow', 'linear', function(){
-       element.show();
-       temp.remove();
+       // Unsure why we need the timeout of 500ms
+       // but it makes it look a lot better
+       setTimeout(function() {
+        element.show();
+        temp.remove();
+       },
+       500);
+
     });
 
-    // TODO: Need other elements in deque to shift over
-    // TODO: Doesn't seem to get all the way over
-    // before showing and removing the temp?
+    // TODO: Animate the other elements in deque shifting over?
 
     console.log("newoffset:");
     console.log(newOffset);
