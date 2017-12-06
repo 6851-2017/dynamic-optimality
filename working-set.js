@@ -963,7 +963,7 @@ class WorkingSetStructure {
   }
 }
 
-/** Test for found bug */
+/** Test for found bug 
 console.log("BUG TEST");
 var workingSet = new WorkingSetStructure();
 workingSet.insert(1);
@@ -975,6 +975,7 @@ console.log(workingSet.trees);
 console.log(workingSet.trees[0].rootNode.toString());
 console.log(workingSet.deques);
 console.log(workingSet.deques[0].toString());
+*/
 
 
 /*
