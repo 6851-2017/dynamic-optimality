@@ -39,11 +39,12 @@ body {
   background-color: #ccc;
 }
 
+/*
 .dequeNode:hover {
   -webkit-transition: all 0.5s;
   background-color: #c8e4f8;
 }
-
+*/
 .tree ul {
     padding-top: 20px; position: relative;
     
@@ -117,17 +118,19 @@ body {
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
 }
+/*
 .tree li div:hover, .tree li div:hover+ul li div {
     background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
 }
+
 .tree li div:hover+ul li::after, 
 .tree li div:hover+ul li::before, 
 .tree li div:hover+ul::before, 
 .tree li div:hover+ul ul::before{
     border-color:  #94a0b4;
 }
-
+*/
 
 .null-elt {
-    background-color: gray;
+    background-color: #ccc;
 }

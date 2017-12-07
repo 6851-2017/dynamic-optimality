@@ -21,7 +21,6 @@ jQuery.fn.insertAt = function(index, element) {
 }
 
 $(document).ready(function() {
-
   // Draw example AVL tree.
   /*
   var rootNodeDemo = new AvlNode(10);
@@ -100,7 +99,19 @@ $(document).ready(function() {
       }
     }
   });
+
 });
+
+$(document).on("mouseenter", ".node", function() {
+  var val = $(this).text();
+  $('.'+val).css("background-color", "#c8e4f8");
+});
+
+$(document).on("mouseleave", ".node", function() {
+  var val = $(this).text();
+  $('.'+val).css("background-color", "#fff");
+});
+
 
 /**
  * Moves the given element from its current position to be
@@ -181,7 +192,7 @@ function getDequeHtml(deque) {
   var currentNode = deque.first;
   while (currentNode) {
     var dequeNode = document.createElement('div');
-    dequeNode.classList.add('dequeNode');
+    dequeNode.classList.add('dequeNode', currentNode.value, 'node');
     dequeNode.setAttribute('id', 'deque-' + currentNode.value);
     dequeNode.appendChild(document.createTextNode(currentNode.value));
 
@@ -213,6 +224,7 @@ function getTreeHtml(rootNode) {
   var treeRoot = document.createElement('li');
   var rootValueDiv = document.createElement('div');
   rootValueDiv.appendChild(document.createTextNode(rootNode.value));
+  rootValueDiv.classList.add(rootNode.value, 'node');
   treeRoot.appendChild(rootValueDiv);
 
   // Add children
