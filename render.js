@@ -63,8 +63,10 @@ $(document).ready(function() {
           console.log("no");
           window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
         } else {
-          workingSetHtml = getWorkingSetHtml(workingSet)
-          container.html(workingSetHtml);
+          setTimeout(function() {
+            workingSetHtml = getWorkingSetHtml(workingSet)
+            container.html(workingSetHtml);
+          }, 100);
         }
       }
       checkInsertFlag();
