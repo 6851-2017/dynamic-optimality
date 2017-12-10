@@ -56,12 +56,26 @@ $(document).ready(function() {
     if (userInput) {
       console.log("Inserting", userInput)
       workingSet.insert(userInput);
-
-
-      var workingSetHtml = getWorkingSetHtml(workingSet);
-      // Reset HTML
-      container.html(workingSetHtml);
+      var workingSetHtml;
+      //wait till animation done!!!!!
+      function checkInsertFlag() {
+        if(insertDone() == false) {
+          console.log("no");
+          window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
+        } else {
+          workingSetHtml = getWorkingSetHtml(workingSet)
+          container.html(workingSetHtml);
+        }
+      }
+      checkInsertFlag();
     }
+      // Reset HTML
+      // container.delay(2000)
+      //          .queue(function(n) {
+      //             workingSetHtml = getWorkingSetHtml(workingSet)
+      //             container.html(workingSetHtml);
+      //             n();
+      //          });
   });
 
   // Delete operation.
@@ -224,25 +238,27 @@ function getTreeHtml(rootNode) {
   var treeRoot = document.createElement('li');
   var rootValueDiv = document.createElement('div');
   rootValueDiv.appendChild(document.createTextNode(rootNode.value));
-  rootValueDiv.classList.add(rootNode.value, 'node');
+  rootValueDiv.classList.add(rootNode.value, 'node', 'tree-'+rootNode.value);
   treeRoot.appendChild(rootValueDiv);
 
   // Add children
   var children = document.createElement('ul');
-  children.appendChild(getChildHtml(rootNode.leftChild));
-  children.appendChild(getChildHtml(rootNode.rightChild));
+  children.appendChild(getChildHtml(rootNode.leftChild, rootNode, true));
+  children.appendChild(getChildHtml(rootNode.rightChild, rootNode, false));
   treeRoot.appendChild(children);
 
   return treeRoot;
 }
 
-function getChildHtml(child) {
+function getChildHtml(child, parent, left) {
   if (child) {
     return getTreeHtml(child);
   } else {
+    parentVal = parent.value;
+    whichChild = left == true ? "left-child" : "right-child";
     var childNull = document.createElement('li');
     var childNullDiv = document.createElement('div');
-    childNullDiv.classList.add('null-elt');
+    childNullDiv.classList.add('null-elt', whichChild, 'parent-'+parentVal);
     childNullDiv.appendChild(document.createTextNode('null'));
     childNull.appendChild(childNullDiv);
     return childNull;
