@@ -475,7 +475,9 @@ class AvlNode {
     insertComplete = false;
     var element = $(".tree-"+this.value);
     console.log(".tree-"+this.value+" : "+element);
+
     element.css("background-color", "#c8e4f8");
+
     var thisNode = this;
     setTimeout(function() {
       if (thisNode.value == val) {
@@ -702,18 +704,18 @@ class AvlTree {
     this.rootNode = null;
   }
 
-  insertSingle(value) {
+  insertSingle(value, treeID=0, numTrees=0) {
     if (!this.rootNode) {
       var rootNode = new AvlNode(value);
       this.rootNode = rootNode;
     } else {
-      this.rootNode.insert(value);
+      this.rootNode.insert(value, treeID, numTrees);
     }
   }
 
-  insert(value) {
+  insert(value, treeID=0, numTrees=0) {
     if (typeof value == 'number') {
-      this.insertSingle(value);
+      this.insertSingle(value, treeID, numTrees);
     } else {
       for (var i = 0; i < value.length; i ++) {
         this.insertSingle(value[i]);
@@ -749,68 +751,7 @@ class AvlTree {
 }
 
 // Demonstrate basic functions
-/*
-var n = new AvlNode(9);
-n.insert([4, 15, 3, 6, 12, 2]);
-console.log(n.toString());
-n.delete(6);
-console.log(n.toString());
-n.insert(11);
-console.log(n.toString());
 
-n.insert(1);
-console.log(n.toString());
-n.delete(11);
-console.log(n.toString());
-n.delete(15);
-console.log(n.toString());
-*/
-
-/*
-var n = new AvlNode(10);
-//n.insert(10);
-n.insert([5,1,7,15,12,18]);
-console.log(n.toString());
-nn = n.delete(10);
-console.log(nn.toString());
-*/
-
-/*
-var tree = new AvlTree();
-var toInsert = [5, 4, 3, 2, 1, 6, 9, 15, 12, 13, 14, 20, 25, 30, 28, 31, 29]; 
-tree.insert(toInsert);
-console.log("did the insert");
-console.log(tree.rootNode.size);
-console.log(tree.rootNode.toString());
-console.log("done");
-// TODO: Doesn't look balanced here
-*/
-
-/*
-tree.delete(2);
-tree.delete(5);
-console.log(tree.rootNode.size);
-console.log(tree.rootNode.toString());
-tree.delete(15);
-tree.delete(13);
-tree.delete(14);
-console.log(tree.rootNode.size);
-console.log(tree.rootNode.toString());
-tree.delete(30);
-tree.delete(25);
-console.log(tree.rootNode.toString());
-tree.delete(31);
-tree.delete(28);
-console.log(tree.rootNode.toString());
-*/
-// Demonstrate search
-/**
-console.log(rootNode.search(5));
-console.log(rootNode.search(3));
-console.log(rootNode.search(25));
-console.log(rootNode.search(40));
-console.log(rootNode.search(-2));
-*/
 
 //////////////////////////////////////
 
@@ -876,12 +817,32 @@ class WorkingSetStructure {
         // delete the item from T_i and insert into T_i+1
         var nodeElt = $("."+item.value);
         nodeElt.css("background-color", "#defee2");
+        nodeElt.removeClass("node");
+
+        $(".null-elt").each(function() {
+          $(this).css("background-color", "#ccc");
+        });
+
+        $(".node").each(function() {
+          $(this).css("background-color", "#fff");
+        })
+        
+        // for (var whichTree = 0; whichTree < j + 1; whichTree++) {
+        //   if (whichTree != i+1) {
+        //     $('.tree'+whichTree).find('.node').each(function(){
+        //       $(this).css('background-color', '#fff');
+        //     });
+        //   }
+        // }
+
         $("#status").text("shifting ["+item.value+"] into tree "+(i+1));
         var thisSet = this;
         var iCopy = i;
+        var jCopy = j;
         var itemVal = item.value;
         setTimeout(function() {
           thisSet.trees[iCopy].delete(itemVal);
+          //console.log((iCopy+1)+" "+(jCopy+1));
           thisSet.trees[iCopy + 1].insert(itemVal);
           setTimeout(function() {
             shiftComplete = true;
@@ -901,13 +862,23 @@ class WorkingSetStructure {
         // delete the item from T_i and insert into T_i-1
         var nodeElt = $("."+item.value);
         nodeElt.css("background-color", "#defee2");
+        nodeElt.removeClass("node");
+
+        $(".null-elt").each(function() {
+          $(this).css("background-color", "#ccc");
+        });
+
+        $(".node").each(function() {
+          $(this).css("background-color", "#fff");
+        })
+
         $("#status").text("shifting ["+item.value+"] into tree "+(i-1));
         var thisSet = this;
         var iCopy = i;
         var itemVal = item.value;
         setTimeout(function() {
           thisSet.trees[iCopy].delete(itemVal);
-          thisSet.trees[iCopy - 1].insert(itemVal);
+          thisSet.trees[iCopy - 1].insert(itemVal, i, h + 1);
           setTimeout(function() {
             shiftComplete = true;
           }, 500);
@@ -1042,208 +1013,4 @@ class WorkingSetStructure {
     return node.value;
   }
 }
-
-/** Test for found bug 
-console.log("BUG TEST");
-var workingSet = new WorkingSetStructure();
-workingSet.insert(1);
-workingSet.insert(2);
-workingSet.search(1);
-workingSet.insert(3);
-workingSet.search(2);
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-*/
-
-
-/*
-var testTree = new AvlTree();
-testTree.insert(5);
-testTree.insert(10);
-console.log(testTree.delete(5));
-console.log(testTree.rootNode.toString());
-console.log(testTree.rootNode);
-*/
-
-/*
-var testNode = new AvlNode(5);
-testNode.insert(10);
-testNode.delete(5);
-console.log(testNode.toString());
-
-
-
-
-/* Test double inserts 
-console.log("WORKING SET");
-var workingSet = new WorkingSetStructure();
-
-workingSet.insertAll([3, 4, 5, 6, 7]);
-//workingSet.insert(3);
-//workingSet.insert(6);
-workingSet.insert(8);
-//workingSet.insert(4);
-workingSet.search(4);
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-console.log(workingSet.deques[1])
-
-
-
-/* Test for search that was failing for Smriti 
-   Currently passes for Caitlin 
-
-workingSet.insertAll([2, 4, 1, 5, 10, 12]);
-/*
-workingSet.insert(2);
-workingSet.insert(4);
-workingSet.insert(1);
-workingSet.insert(5);
-workingSet.insert(10);
-workingSet.insert(12);
-
-
-workingSet.search(2);
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-
-/* Tests for search 
-workingSet.insert(5);
-workingSet.insert(6);
-workingSet.search(5);
-workingSet.search(5);
-workingSet.search(5);
-workingSet.search(6);
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-
-workingSet.insert(1);
-workingSet.insert(2);
-workingSet.insert(3);
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-
-workingSet.search(6);
-workingSet.search(5);
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-console.log(workingSet.deques[1].toString());
-
-workingSet.delete(2);
-
-workingSet.search(1);
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-*/
-
-
-/* Tests for insert + delete 
-workingSet.insert(5);
-workingSet.insert(10);
-workingSet.insert(15);
-workingSet.insert(0);
-workingSet.insert(20);
-workingSet.insert(19);
-workingSet.insert(21);
-workingSet.insert(4);
-workingSet.insert(6);
-workingSet.insert(2);
-workingSet.insert(3);
-workingSet.insert(1);
-
-
-workingSet.delete(15);
-workingSet.delete(2);
-workingSet.delete(1);
-workingSet.delete(19);
-workingSet.delete(20);
-workingSet.delete(0);
-workingSet.delete(5);
-workingSet.delete(4);
-
-console.log("after 4");
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-
-// still left: 10, 21, 6, 3
-
-workingSet.delete(21);
-
-workingSet.insert(90);
-
-workingSet.insert(80);
-
-workingSet.delete(80);
-// Should be 90, 3, 6, 10
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-
-workingSet.delete(10);
-workingSet.delete(6);
-workingSet.delete(3);
-workingSet.delete(90);
-
-console.log(workingSet.trees);
-//console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-//console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-
-workingSet.insert(4);
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-
-workingSet.insert(5);
-workingSet.insert(6);
-
-console.log(workingSet.trees);
-console.log(workingSet.trees[0].rootNode.toString());
-//console.log(workingSet.trees[1].rootNode.toString());
-console.log(workingSet.deques);
-console.log(workingSet.deques[0].toString());
-//console.log(workingSet.deques[1].toString());
-*/
 

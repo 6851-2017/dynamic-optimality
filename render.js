@@ -306,6 +306,7 @@ function getWorkingSetHtml(ws) {
   treesDiv.setAttribute('id', 'trees');
   for (var i = 0; i < ws.trees.length ; i++) {
     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
+    treeHtml.classList.add("tree"+i);
     treesDiv.append(treeHtml);
   }
   mainDiv.append(treesDiv);
