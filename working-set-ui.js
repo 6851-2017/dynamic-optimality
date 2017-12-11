@@ -485,7 +485,7 @@ class AvlNode {
           thisNode.rightChild.insertHelper(val);
         } else {
           var nullElt = $(".right-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#d08e91");
+          nullElt.css("background-color", "#ffd0d2");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -503,7 +503,7 @@ class AvlNode {
           thisNode.leftChild.insertHelper(val);
         } else {
           var nullElt = $(".left-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#d08e91");
+          nullElt.css("background-color", "#ffd0d2");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -875,13 +875,12 @@ class WorkingSetStructure {
         this.deques[i + 1].pushToFront(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i+1
         var nodeElt = $("."+item.value);
-        nodeElt.css("background-color", "#bdebc2");
+        nodeElt.css("background-color", "#defee2");
+        $("#status").text("shifting ["+item.value+"] into tree "+(i+1));
         var thisSet = this;
         var iCopy = i;
         var itemVal = item.value;
         setTimeout(function() {
-          console.log(thisSet);
-          console.log(iCopy);
           thisSet.trees[iCopy].delete(itemVal);
           thisSet.trees[iCopy + 1].insert(itemVal);
           setTimeout(function() {
@@ -901,13 +900,12 @@ class WorkingSetStructure {
         this.deques[i - 1].pushToBack(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i-1
         var nodeElt = $("."+item.value);
-        nodeElt.css("background-color", "#bdebc2");
+        nodeElt.css("background-color", "#defee2");
+        $("#status").text("shifting ["+item.value+"] into tree "+(i-1));
         var thisSet = this;
         var iCopy = i;
         var itemVal = item.value;
         setTimeout(function() {
-          console.log(thisSet);
-          console.log(iCopy);
           thisSet.trees[iCopy].delete(itemVal);
           thisSet.trees[iCopy - 1].insert(itemVal);
           setTimeout(function() {
@@ -961,6 +959,7 @@ class WorkingSetStructure {
       // shiftComplete = true;
     }
 
+    $("#status").text("inserting ["+value+"]");
     this.trees[0].insert(value);
     this.deques[0].pushToFront(new DequeNode(value));
     var thisNode = this;

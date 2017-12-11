@@ -19,6 +19,18 @@ body {
     padding: 8;
 }
 
+#status {
+    display: inline-block;
+}
+
+#statusContainer {
+    padding: 10px;
+    margin: 10px;
+    background-color: #def4fe;
+    border-radius: 10px;
+    width: fit-content;
+}
+
 .deque {
   padding: 20px;
 }

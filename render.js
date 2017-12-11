@@ -63,10 +63,13 @@ $(document).ready(function() {
           console.log("no");
           window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
         } else {
-          setTimeout(function() {
-            workingSetHtml = getWorkingSetHtml(workingSet)
-            container.html(workingSetHtml);
-          }, 100);
+          $("#status").text("idle");
+          workingSetHtml = getWorkingSetHtml(workingSet)
+          container.html(workingSetHtml);
+          // setTimeout(function() {
+          //   workingSetHtml = getWorkingSetHtml(workingSet)
+          //   container.html(workingSetHtml);
+          // }, 100);
         }
       }
       checkInsertFlag();
@@ -109,9 +112,9 @@ $(document).ready(function() {
         // The 'HEAD' block is the fist child, so insert at 1
         moveAnimate(dequeElement, newParent, 1); 
 
-        //var workingSetHtml = getWorkingSetHtml(workingSet);
+        // var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
-        //container.html(workingSetHtml);
+        // container.html(workingSetHtml);
       }
     }
   });
