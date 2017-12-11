@@ -476,7 +476,7 @@ class AvlNode {
     var element = $(".tree-"+this.value);
     console.log(".tree-"+this.value+" : "+element);
 
-    element.css("background-color", "#c8e4f8");
+    element.css("background-color", "#def4fe");
 
     var thisNode = this;
     setTimeout(function() {
@@ -487,7 +487,7 @@ class AvlNode {
           thisNode.rightChild.insertHelper(val);
         } else {
           var nullElt = $(".right-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#ffd0d2");
+          nullElt.css("background-color", "#7bd6ff");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -505,7 +505,7 @@ class AvlNode {
           thisNode.leftChild.insertHelper(val);
         } else {
           var nullElt = $(".left-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#ffd0d2");
+          nullElt.css("background-color", "#7bd6ff");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -820,7 +820,7 @@ class WorkingSetStructure {
         nodeElt.removeClass("node");
 
         $(".null-elt").each(function() {
-          $(this).css("background-color", "#ccc");
+          $(this).css("background-color", "#e3e3e3");
         });
 
         $(".node").each(function() {
@@ -865,7 +865,7 @@ class WorkingSetStructure {
         nodeElt.removeClass("node");
 
         $(".null-elt").each(function() {
-          $(this).css("background-color", "#ccc");
+          $(this).css("background-color", "#e3e3e3");
         });
 
         $(".node").each(function() {

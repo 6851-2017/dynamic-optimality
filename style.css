@@ -19,13 +19,23 @@ body {
     padding: 8;
 }
 
+.tree{
+    width: fit-content;
+    display: inline-block;
+    margin: 10px;
+}
+
+.container{
+    float: left;
+}
+
 #status {
     display: inline-block;
 }
 
 #statusContainer {
     padding: 10px;
-    margin: 10px;
+    margin: 20px;
     background-color: #def4fe;
     border-radius: 10px;
     width: fit-content;
@@ -33,9 +43,14 @@ body {
 
 .deque {
   padding: 20px;
+  padding-right: 60px;
+  width: fit-content;
+  display: inline-block;
 }
 
 .dequeNode, .headNode {
+  font-size: 11px;
+  color: #666;
   -webkit-transition: all 0.5s;
   padding: 10px;
   padding-top: 5px;
@@ -48,7 +63,7 @@ body {
 }
 
 .headNode {
-  background-color: #ccc;
+  background-color: #e3e3e3;
 }
 
 /*
@@ -144,5 +159,5 @@ body {
 */
 
 .null-elt {
-    background-color: #ccc;
+    background-color: #e3e3e3;
 }
