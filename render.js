@@ -6,9 +6,6 @@
  * Source: https://stackoverflow.com/questions/3562493/jquery-insert-div-as-certain-index
  */
 jQuery.fn.insertAt = function(index, element) {
-  console.log(this);
-  console.log(this.children());
-  console.log(this.children().length);
   var lastIndex = this.children().length;
   if (index < 0) {
     index = Math.max(0, lastIndex + 1 + index);
@@ -90,9 +87,8 @@ $(document).ready(function() {
       } else {
         // Move element to beginning of deque
         var dequeElement = $('#deque-' + userInput);
-        var newParent = $('#deques').children()[0];
-        // The 'HEAD' block is the fist child, so insert at 1
-        moveAnimate(dequeElement, newParent, 1); 
+        var newParent = $($('#deques').children()[0]);
+        animateDequeSearch(dequeElement, newParent);
 
         //var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
@@ -101,6 +97,91 @@ $(document).ready(function() {
     }
   });
 });
+
+/**
+ * Moves element to front of deque and shifts all
+ * the values that were previously in front of dequeNode
+ * over by one.
+ */
+function animateDequeSearch(element, deque) {
+  var elementMarginTop = parseInt(element.css('marginTop'));
+  var elementMarginLeft = parseInt(element.css('marginLeft'));
+
+  var newOffset = $(deque.children()[1]).offset();
+
+  // Amount for a deque element to move right
+  var moveRightAmount =
+    $(deque.children()[2]).offset().left -
+    $(deque.children()[1]).offset().left;
+
+  // TODO: Won't work w/ < 2 elements in deque
+
+  var indexOfElement = element.index();
+
+
+  // Hide all the elements that will move right by one
+  // TODO: Can still see the old elements for a bit
+  // before they disappear
+  for (var i = 1; i < indexOfElement; i++) {
+    var elementToAnimate = $(deque.children()[i]);
+    elementToAnimate.css('visibility', 'hidden');
+  }
+
+  // Animate those elements moving to the right
+  for (var i = 1; i < indexOfElement; i++) {
+    var elementToAnimate = $(deque.children()[i]);
+
+    var temp = elementToAnimate.clone().appendTo('body');
+    temp.css({
+      'position': 'absolute',
+      // Account for margins
+      'left': elementToAnimate.offset().left - elementMarginLeft,
+      'top': elementToAnimate.offset().top - elementMarginTop,
+      'z-index': 1000+i,
+      'visibility': 'visible',
+    });
+
+
+    temp.animate(
+      {'left': elementToAnimate.offset().left + moveRightAmount - elementMarginLeft},
+      'slow',
+      'linear',
+      // Create a separate closure so we can keep what
+      // elementToAnimate is each time
+      (function(temp, elementToAnimate) {
+        return function() {
+          setTimeout(function() {
+            temp.remove();
+            elementToAnimate.css('visibility', 'visible');
+          },
+          500)
+          
+        }
+      })(temp, elementToAnimate));
+  }
+
+  // Animate the actual element moving to the front
+  
+  element.css('visibility', 'hidden');
+  var tempElement = element.clone().appendTo('body');
+
+  tempElement.css({
+    'position': 'absolute',
+    'left': element.offset().left - elementMarginLeft,
+    'top': element.offset().top - elementMarginTop,
+    'z-index': 2000,
+    'background': 'green',
+    'visibility': 'visible'
+  });
+
+  tempElement.animate({'left': newOffset.left - elementMarginLeft}, 'slow', 'linear',function() {
+    setTimeout(function() {
+      tempElement.remove();
+      deque.insertAt(1, element);
+      element.css('visibility', 'visible');
+    }, 500);
+  });
+}
 
 /**
  * Moves the given element from its current position to be
@@ -161,6 +242,8 @@ function moveAnimate(element, newParent, index) {
     });
 
     // TODO: Animate the other elements in deque shifting over?
+    // TODO: Searching for something in the middle
+    // makes everything move down
 
     console.log("newoffset:");
     console.log(newOffset);
