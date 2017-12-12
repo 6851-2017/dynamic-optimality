@@ -948,12 +948,15 @@ class WorkingSetStructure {
       return null;
     }
 
+    if (j != 0) {
+      this.trees[j].delete(value);
+      this.trees[0].insert(value);
+    }
+
     // Delete value from T_j
-    this.trees[j].delete(value);
     this.deques[j].findAndPop(value);
 
     // Insert value into T_1
-    this.trees[0].insert(value);
     this.deques[0].pushToFront(new DequeNode(value));
 
     // Shift 1 -> j
