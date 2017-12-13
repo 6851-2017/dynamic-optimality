@@ -1,5 +1,5 @@
 /**
- * Data structures to compare with: BST, ...
+ * Data structures to compare with: BST, AVL tree, Hash Table, Cache (LRU), Splay Tree
  * Interface/API that must be shared by all structures:
  * insert(value) --> void
  * delete(value) --> false, or void
@@ -1020,58 +1020,195 @@ class WorkingSetStructure {
     /**
    * Search for value in the structure and returns that value.
    * Returns null if the value isn't in the structure.
-   */ 
-  search(value) {
-    
+   */
+    search(value) {
+
         // Go through trees and search for value
         var j = null;
         var node = null;
         for (var i = 0; i < this.trees.length; i++) {
-          var foundNode = this.trees[i].search(value);
-          if (foundNode) {
-            j = i;
-            node = foundNode;
-            break;
-          }
+            var foundNode = this.trees[i].search(value);
+            if (foundNode) {
+                j = i;
+                node = foundNode;
+                break;
+            }
         }
-    
+
         if (j == null) { // if j = 0, j will evaluate to false
-          // value is not in the tree
-          return null;
+            // value is not in the tree
+            return null;
         }
-    
+
         if (j != 0) {
-          this.trees[j].delete(value);
-          this.trees[0].insert(value);
+            this.trees[j].delete(value);
+            this.trees[0].insert(value);
         }
-    
+
         // Delete value from T_j
         this.deques[j].findAndPop(value);
-    
+
         // Insert value into T_1
         this.deques[0].pushToFront(new DequeNode(value));
-    
+
         // Shift 1 -> j
         this.shift(0, j);
-    
+
         return node.value;
-      }
-    
+    }
+
 }
 
 /**
- * Performance comparisons
+ * Hashtable
+ * Adapted from: https://gist.github.com/alexhawkins/f6329420f40e5cafa0a4
+ * For our use case, key = value (key is always equal to value).
  */
 
+var HashTable = function () {
+    this._storage = [];
+    this._count = 0;
+    this._limit = 8;
+}
+
+
+HashTable.prototype.insert = function (key) {
+    var value = key
+    //create an index for our storage location by passing it through our hashing function
+    var index = this.hashFunc(key, this._limit);
+    //retrieve the bucket at this particular index in our storage, if one exists
+    //[[ [k,v], [k,v], [k,v] ] , [ [k,v], [k,v] ]  [ [k,v] ] ]
+    var bucket = this._storage[index]
+    //does a bucket exist or do we get undefined when trying to retrieve said index?
+    if (!bucket) {
+        //create the bucket
+        var bucket = [];
+        //insert the bucket into our hashTable
+        this._storage[index] = bucket;
+    }
+
+    var override = false;
+    //now iterate through our bucket to see if there are any conflicting
+    //key value pairs within our bucket. If there are any, override them.
+    for (var i = 0; i < bucket.length; i++) {
+        var tuple = bucket[i];
+        if (tuple[0] === key) {
+            //overide value stored at this key
+            tuple[1] = value;
+            override = true;
+        }
+    }
+
+    if (!override) {
+        //create a new tuple in our bucket
+        //note that this could either be the new empty bucket we created above
+        //or a bucket with other tupules with keys that are different than 
+        //the key of the tuple we are inserting. These tupules are in the same
+        //bucket because their keys all equate to the same numeric index when
+        //passing through our hash function.
+        bucket.push([key, value]);
+        this._count++
+        //now that we've added our new key/val pair to our storage
+        //let's check to see if we need to resize our storage
+        if (this._count > this._limit * 0.75) {
+            this.resize(this._limit * 2);
+        }
+    }
+    return this;
+};
+
+
+HashTable.prototype.delete = function (key) {
+    var index = this.hashFunc(key, this._limit);
+    var bucket = this._storage[index];
+    if (!bucket) {
+        return false;
+    }
+    //iterate over the bucket
+    for (var i = 0; i < bucket.length; i++) {
+        var tuple = bucket[i];
+        //check to see if key is inside bucket
+        if (tuple[0] === key) {
+            //if it is, get rid of this tuple
+            bucket.splice(i, 1);
+            this._count--;
+            if (this._count < this._limit * 0.25) {
+                this._resize(this._limit / 2);
+            }
+            return tuple[1];
+        }
+    }
+};
+
+
+
+HashTable.prototype.search = function (key) {
+    var index = this.hashFunc(key, this._limit);
+    var bucket = this._storage[index];
+
+    if (!bucket) {
+        return false;
+    }
+
+    for (var i = 0; i < bucket.length; i++) {
+        var tuple = bucket[i];
+        if (tuple[0] === key) {
+            return tuple[1];
+        }
+    }
+
+    return false;
+};
+
+
+HashTable.prototype.hashFunc = function (str, max) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        var letter = str[i];
+        hash = (hash << 5) + letter.charCodeAt(0);
+        hash = (hash & hash) % max;
+    }
+    return hash;
+};
+
+
+HashTable.prototype.resize = function (newLimit) {
+    var oldStorage = this._storage;
+
+    this._limit = newLimit;
+    this._count = 0;
+    this._storage = [];
+
+    oldStorage.forEach(function (bucket) {
+        if (!bucket) {
+            return;
+        }
+        for (var i = 0; i < bucket.length; i++) {
+            var tuple = bucket[i];
+            this.insert(tuple[0]);
+        }
+    }.bind(this));
+};
+
+
+HashTable.prototype.retrieveAll = function () {
+    console.log(this._storage);
+    //console.log(this._limit);
+};
+
+/**
+* Performance comparisons
+*/
+
 // The data structures we want to compare performance with:
-var test_structures = ["BST", "AVL"];
+var test_structures = ["BST", "AVL", "HashTable"];
 
 // measures is a dictionary where key is data structure and values are op times
 // example entry: "BST" : [[50ms, 80ms], [20ms, 30ms], ...]
-var measures1 = { "BST": [], "AVL": [] };
-var measures2 = { "BST": [], "AVL": [] };
-var measures3 = { "BST": [], "AVL": [] };
-var measures4 = { "BST": [], "AVL": [] };
+var measures1 = { "BST": [], "AVL": [], "HashTable": [] };
+var measures2 = { "BST": [], "AVL": [], "HashTable": [] };
+var measures3 = { "BST": [], "AVL": [], "HashTable": [] };
+var measures4 = { "BST": [], "AVL": [], "HashTable": [] };
 
 // using npm package for timing
 var now = require("performance-now")
@@ -1110,6 +1247,8 @@ function test1(structure, n) {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
+    } else if (structure == "HashTable") {
+        var struct = new HashTable();
     }
     // INSERT 1...N
     // insert into working set
@@ -1153,6 +1292,8 @@ function test2(structure, n) {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
+    } else if (structure == "HashTable") {
+        var struct = new HashTable();
     }
     // INSERT 1...N
     // insert into working set
@@ -1196,6 +1337,8 @@ function test3(structure, n) {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
+    } else if (structure == "HashTable") {
+        var struct = new HashTable();
     }
     // INSERT 1...N
     // insert into working set
@@ -1229,7 +1372,7 @@ function test3(structure, n) {
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures3[structure].push(["search 1 (" + n + " times) WS: " + wsTime, "search 1 (" + n +" times) " + structure + ": " + structTime]);
+    measures3[structure].push(["search 1 (" + n + " times) WS: " + wsTime, "search 1 (" + n + " times) " + structure + ": " + structTime]);
 }
 
 // insert 1...n and then search n (n times):
@@ -1239,6 +1382,8 @@ function test4(structure, n) {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
+    } else if (structure == "HashTable") {
+        var struct = new HashTable();
     }
     // INSERT 1...N
     // insert into working set
