@@ -1197,18 +1197,398 @@ HashTable.prototype.retrieveAll = function () {
 };
 
 /**
+ * Cache (LRU)
+ * Adapted from: https://chrisrng.svbtle.com/lru-cache-in-javascript
+ * For our use case, key = value (key is always equal to value).
+ */
+
+/* Initialize LRU cache with default limit being 10 items */
+function lru(limit) {
+    this.size = 0;
+    (typeof limit == "number") ? this.limit = limit : this.limit = 10;
+    this.map = {};
+    this.head = null;
+    this.tail = null;
+}
+
+lru.prototype.lrunode = function(key, value) {
+    if (typeof key != "undefined" && key !== null) {
+        this.key = key;
+    }
+    if (typeof value != "undefined" && value !== null) {
+        this.value = value;
+    }
+    this.prev = null;
+    this.next = null;
+}
+
+lru.prototype.setHead = function(node) {
+    node.next = this.head;
+    node.prev = null;
+    if (this.head !== null) {
+        this.head.prev = node;
+    }
+    this.head = node;
+    if (this.tail === null) {
+        this.tail = node;
+    }
+    this.size++;
+    this.map[node.key] = node;
+}
+
+/* Change or add a new value in the cache
+ * We overwrite the entry if it already exists
+ */
+lru.prototype.insert = function(key) {
+    var value = key;
+    var node = new lru.prototype.lrunode(key, value);
+    if (this.map[key]) {
+        this.map[key].value = node.value;
+        this.delete(node.key);
+    } else {
+        if (this.size >= this.limit) {
+            delete this.map[this.tail.key];
+            this.size--;
+            this.tail = this.tail.prev;
+            this.tail.next = null;
+        }
+    }
+    this.setHead(node);
+};
+
+/* Retrieve a single entry from the cache */
+lru.prototype.search = function(key) {
+    if (this.map[key]) {
+        var value = this.map[key].value;
+        var node = new lru.prototype.lrunode(key, value);
+        this.delete(key);
+        this.setHead(node);
+        return value;
+    } else {
+        console.log("Key " + key + " does not exist in the cache.")
+    }
+};
+
+/* Remove a single entry from the cache */
+lru.prototype.delete = function(key) {
+    var node = this.map[key];
+    if (node.prev !== null) {
+        node.prev.next = node.next;
+    } else {
+        this.head = node.next;
+    }
+    if (node.next !== null) {
+        node.next.prev = node.prev;
+    } else {
+        this.tail = node.prev;
+    }
+    delete this.map[key];
+    this.size--;
+};
+
+/* Resets the entire cache - Argument limit is optional to be reset */
+lru.prototype.removeAll = function(limit) {
+    this.size = 0;
+    this.map = {};
+    this.head = null;
+    this.tail = null;
+    if (typeof limit == "number") {
+        this.limit = limit;
+    }
+};
+
+/* Traverse through the cache elements using a callback function
+ * Returns args [node element, element number, cache instance] for the callback function to use
+ */
+lru.prototype.forEach = function(callback) {
+    var node = this.head;
+    var i = 0;
+    while (node) {
+        callback.apply(this, [node, i, this]);
+        i++;
+        node = node.next;
+    }
+}
+
+/* Returns a JSON representation of the cache */
+lru.prototype.toJSON = function() {
+    var json = []
+    var node = this.head;
+    while (node) {
+        json.push({
+            key : node.key, 
+            value : node.value
+        });
+        node = node.next;
+    }
+    return json;
+}
+
+/* Returns a String representation of the cache */
+lru.prototype.toString = function() {
+    var s = '';
+    var node = this.head;
+    while (node) {
+        s += String(node.key)+':'+node.value;
+        node = node.next;
+        if (node) {
+            s += '\n';
+        }
+    }
+    return s;
+}
+
+/**
+ * Splay Tree
+ * Adapted from: https://github.com/slmoore/js-splay-tree/blob/master/splay-tree-clean.js
+ * For our use case, key = value (key is always equal to value).
+ */
+
+function SplayNode(key, val) {
+    this.key = key;
+    this.val = val;
+    this.left = null;
+    this.right = null;
+}
+
+function SplayBst() {
+    this.root = null;
+}
+
+SplayBst.prototype.search = function (k) {
+    if (this.root === null || (!(Number(k) || k === 0) && typeof k !== "string"))
+        return false;
+
+    this.splay(k);
+    return this.root.key === k ? this.root : false;
+};
+
+SplayBst.prototype.insert = function (k) {
+    var v = k;
+    var n;
+    if ((!(Number(k) || k === 0) && typeof k !== "string")
+        || (!(Number(v) || v === 0) && typeof v !== "string")) {
+        throw new Error("Invalid insert");
+        return;
+    }
+
+    if (this.root === null) {
+        this.root = new SplayNode(k, v);
+        return;
+    }
+
+    this.splay(k);
+
+    if (this.root.key > k) {
+        n = new SplayNode(k, v);
+        n.left = this.root.left;
+        n.right = this.root;
+        this.root.left = null;
+        this.root = n;
+
+    } else if (this.root.key < k) {
+        n = new SplayNode(k, v);
+        n.right = this.root.right;
+        n.left = this.root;
+        this.root.right = null;
+        this.root = n;
+
+    } else {
+        this.root.val = v;
+    }
+
+};
+
+SplayBst.prototype.delete = function (k) {
+    var temp;
+    if (this.root === null || (!(Number(k) || k === 0) && typeof k !== "string"))
+        return;
+
+    this.splay(k);
+
+    if (this.root.key === k) {
+
+        if (this.root.left === null && this.root.right === null) {
+            this.root = null;
+
+        } else if (this.root.left === null) {
+            this.root = this.root.right;
+
+        } else {
+
+            temp = this.root.right;
+
+            this.root = this.root.left;
+
+            this.splay(k);
+
+            this.root.right = temp;
+        }
+    }
+
+};
+
+SplayBst.prototype.min = function (n) {
+    var current;
+    var minRecursive = function (cNode) {
+        if (cNode.left) {
+            return minRecursive(cNode.left);
+        }
+        return cNode;
+    };
+
+    if (this.root === null)
+        return null;
+
+    if (n instanceof SplayNode)
+        current = n;
+    else
+        current = this.root;
+
+    return minRecursive(current);
+};
+
+SplayBst.prototype.max = function (n) {
+    var current;
+    var maxRecursive = function (cNode) {
+        if (cNode.right) {
+            return maxRecursive(cNode.right);
+        }
+        return cNode;
+    };
+
+    if (this.root === null)
+        return null;
+
+    if (n instanceof SplayNode)
+        current = n;
+    else
+        current = this.root;
+
+    return maxRecursive(current);
+};
+
+SplayBst.prototype.inOrder = function (n, fun) {
+    if (n instanceof SplayNode) {
+        this.inOrder(n.left, fun);
+        if (fun) { fun(n); }
+        this.inOrder(n.right, fun);
+    }
+};
+
+SplayBst.prototype.contains = function (k) {
+    var containsRecursive = function (n) {
+        if (n instanceof SplayNode) {
+            if (n.key === k) {
+                return true;
+            }
+            containsRecursive(n.left);
+            containsRecursive(n.right);
+        }
+    };
+
+    if (this.root === null || (!(Number(k) || k === 0) && typeof k !== "string"))
+        return false;
+
+    return containsRecursive(this.root) ? true : false;
+};
+
+SplayBst.prototype.rotateRight = function (n) {
+    var temp;
+    if (n instanceof SplayNode) {
+        temp = n.left;
+        n.left = temp.right;
+        temp.right = n;
+    }
+    return temp;
+};
+
+SplayBst.prototype.rotateLeft = function (n) {
+    var temp;
+    if (n instanceof SplayNode) {
+        temp = n.right;
+        n.right = temp.left;
+        temp.left = n;
+    }
+    return temp;
+};
+
+SplayBst.prototype.splay = function (k) {
+    var splayRecursive = function (n, key) {
+
+        if (n === null)
+            return null;
+
+        if (key < n.key) {
+
+            if (n.left === null)
+                return n;
+
+            if (key < n.left.key) {
+                n.left.left = splayRecursive(n.left.left, key);
+                n = this.rotateRight(n);
+
+            } else if (key > n.left.key) {
+                n.left.right = splayRecursive(n.left.right, key);
+                if (n.left.right !== null)
+                    n.left = this.rotateLeft(n.left);
+            }
+
+            if (n.left === null)
+                return n;
+            else
+                return this.rotateRight(n);
+
+        } else if (key > n.key) {
+            if (n.right === null)
+                return n;
+
+            if (key > n.right.key) {
+                n.right.right = splayRecursive(n.right.right, key);
+                n = this.rotateLeft(n);
+
+            } else if (key < n.right.key) {
+                n.right.left = splayRecursive(n.right.left, key);
+                if (n.right.left !== null)
+                    n.right = this.rotateRight(n.right);
+            }
+
+            if (n.right === null)
+                return n;
+            else
+                return this.rotateLeft(n);
+
+        } else {
+            return n;
+        }
+
+    }.bind(this);
+
+    if (this.root === null || (!(Number(k) || k === 0) && typeof k !== "string")) {
+        throw new Error("Invalid splay");
+        return;
+    }
+
+    this.root = splayRecursive(this.root, k);
+    return;
+};
+
+/**
 * Performance comparisons
 */
 
+// TODO: Find implementation of cache that includes memory simulation?
+// Work around for now: limit of cache is n... which somewhat defeats the purpose of a cache.
+
 // The data structures we want to compare performance with:
-var test_structures = ["BST", "AVL", "HashTable"];
+var test_structures = ["BST", "AVL", "HashTable", "Cache", "Splay"];
 
 // measures is a dictionary where key is data structure and values are op times
 // example entry: "BST" : [[50ms, 80ms], [20ms, 30ms], ...]
-var measures1 = { "BST": [], "AVL": [], "HashTable": [] };
-var measures2 = { "BST": [], "AVL": [], "HashTable": [] };
-var measures3 = { "BST": [], "AVL": [], "HashTable": [] };
-var measures4 = { "BST": [], "AVL": [], "HashTable": [] };
+var measures1 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
+var measures2 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
+var measures3 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
+var measures4 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
 
 // using npm package for timing
 var now = require("performance-now")
@@ -1249,6 +1629,10 @@ function test1(structure, n) {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
+    } else if (structure == "Cache") {
+        var struct = new lru(n);
+    } else if (structure == "Splay") {
+        var struct = new SplayBst();
     }
     // INSERT 1...N
     // insert into working set
@@ -1294,6 +1678,10 @@ function test2(structure, n) {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
+    } else if (structure == "Cache") {
+        var struct = new lru(n);
+    } else if (structure == "Splay") {
+        var struct = new SplayBst();
     }
     // INSERT 1...N
     // insert into working set
@@ -1339,6 +1727,10 @@ function test3(structure, n) {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
+    } else if (structure == "Cache") {
+        var struct = new lru(n);
+    } else if (structure == "Splay") {
+        var struct = new SplayBst();
     }
     // INSERT 1...N
     // insert into working set
@@ -1384,6 +1776,10 @@ function test4(structure, n) {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
+    } else if (structure == "Cache") {
+        var struct = new lru(n);
+    } else if (structure == "Splay") {
+        var struct = new SplayBst();
     }
     // INSERT 1...N
     // insert into working set
