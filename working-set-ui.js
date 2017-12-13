@@ -1,13 +1,3 @@
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    console.log("holding");
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
-    }
-  }
-}
-
 var insertComplete = true;
 var deleteComplete = true;
 var searchComplete = true;
@@ -658,7 +648,6 @@ class AvlNode {
     searchComplete = false;
     // $("#status").text("searching for ["+value+"] in tree [");
     var element = $(".tree-"+this.value);
-    console.log("THIS ELEMENT: "+this.value);
     element.css("background-color", "#ffed24");
     if (this.value == value) {
       element.css("background-color", "#ff9024");
@@ -879,7 +868,6 @@ class WorkingSetStructure {
           thisSet.trees[iCopy + 1].insert(itemVal);
           function checkInsertDone() {
             if(justInsertDone() == false) {
-              console.log("no (line 883, ws)");
               window.setTimeout(checkInsertDone, 100); /* this checks the flag every 100 milliseconds*/
             } else {
               shiftComplete = true;
@@ -891,7 +879,6 @@ class WorkingSetStructure {
       // h 1, j 0
     } else if (j < h) {
       for (var i = h; i > j; i--) {
-        console.log("shifting from tree "+i);
         // deque and item from Q_i, and enqueue the item into Q_i-1
         var item = this.deques[i].popFromFront();
         if (!item) {
@@ -1048,16 +1035,13 @@ class WorkingSetStructure {
       var container = $(".container");
       var workingSetHtml = getWorkingSetHtml(thisStructure);
       container.html(workingSetHtml);
-      console.log("re rendered FROM DELETE ANIMATE");
       setTimeout(function(){
         // THEN:
-        console.log('SHIFTING FROM DELETE ANIMATE');
         thisStructure.shift(thisStructure.deques.length - 1, index);
       }, 500);
       // thisStructure.shift(thisStructure.deques.length - 1, foundIndex);
       function checkShiftFlag() {
         if (shiftDone() == false) {
-          console.log('shifting not done u bich!!');
           window.setTimeout(checkShiftFlag, 100);
         } else {
           if (thisStructure.trees[thisStructure.trees.length - 1].size() == 0) {
@@ -1136,14 +1120,9 @@ class WorkingSetStructure {
       if(insertDone() == false) {
         window.setTimeout(checkInsertComplete, 100); /* this checks the flag every 100 milliseconds*/
       } else {
-        // FIRST RE RENDER!!!!!!!!
-        console.log("trying first rerender");
-        console.log(thisStructure);
         var container = $(".container");
         var workingSetHtml = getWorkingSetHtml(thisStructure);
-        console.log(workingSetHtml);
         container.html(workingSetHtml);
-        console.log("re rendered");
         setTimeout(function(){
           // THEN:
           thisStructure.shift(0, j);

@@ -51,17 +51,13 @@ $(document).ready(function() {
   // Insert operation.
   $('#insert').click(function() {
     if (userInput) {
-      console.log("Inserting", userInput)
       workingSet.insert(userInput);
       var workingSetHtml;
       //wait till animation done!!!!!
       function checkInsertFlag() {
         if(insertDone() == false) {
-          console.log("no");
           window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
         } else {
-          console.log("new workingset: ");
-          console.log(workingSet);
           $("#operation").text("none");
           $("#status").text("idle");
           workingSetHtml = getWorkingSetHtml(workingSet)
@@ -75,7 +71,6 @@ $(document).ready(function() {
   // Delete operation.
   $('#delete').click(function() {
     if (userInput) {
-      console.log("Deleting", userInput)
       var prevSize = workingSet.trees.length;
       var del = workingSet.deleteFind(userInput);
       if (del != null) {
@@ -93,12 +88,10 @@ $(document).ready(function() {
               workingSet.deleteFinish(userInput, del);
               function checkShiftFinished() {
                 if (shiftDone() == false) {
-                  console.log('SHIFT NOT DONE!!!!!!!!!');
                   window.setTimeout(checkShiftFinished, 100)
                 } else {
                   $("#operation").text("none");
                   $("#status").text("idle");
-                  console.log("FINAL RE RENDER");
                   workingSetHtml = getWorkingSetHtml(workingSet)
                   container.html(workingSetHtml);
                 }
@@ -107,7 +100,6 @@ $(document).ready(function() {
                 checkShiftFinished();
               }, 510);
             } else {
-              console.log("sizeNow != prevSize");
               workingSetHtml = getWorkingSetHtml(workingSet)
               container.html(workingSetHtml);
             }
@@ -135,7 +127,6 @@ $(document).ready(function() {
         workingSet.searchAnimate(userInput, indexOfElt);
         function checkSearchFlag() {
           if(searchDone() == false) {
-            console.log("no (search)");
             window.setTimeout(checkSearchFlag, 100); /* this checks the flag every 100 milliseconds*/
           } else {
             // Move element to beginning of deque
@@ -153,17 +144,14 @@ $(document).ready(function() {
             workingSet.searchFinish(userInput, indexOfElt);
             function checkSearchFinished() {
               if (insertAndDeleteDone() == false) {
-                console.log("searchFinish NOT DONE!!!");
                 window.setTimeout(checkSearchFinished, 100);
               } else {
                 function checkShiftFinished() {
                   if (shiftDone() == false) {
-                    console.log('SHIFT NOT DONE!!!!!!!!!');
                     window.setTimeout(checkShiftFinished, 100)
                   } else {
                     $("#operation").text("none");
                     $("#status").text("idle");
-                    console.log("FINAL RE RENDER");
                     workingSetHtml = getWorkingSetHtml(workingSet)
                     container.html(workingSetHtml);
                   }
@@ -359,12 +347,6 @@ function moveAnimate(element, newParent, index) {
     // TODO: Animate the other elements in deque shifting over?
     // TODO: Searching for something in the middle
     // makes everything move down
-
-    console.log("newoffset:");
-    console.log(newOffset);
-
-    console.log("oldoffset:");
-    console.log(oldOffset);
 }
 
 
