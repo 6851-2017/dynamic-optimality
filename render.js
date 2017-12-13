@@ -450,9 +450,11 @@ function getWorkingSetHtml(ws) {
   var treesDiv = document.createElement('div');
   treesDiv.setAttribute('id', 'trees');
   for (var i = 0; i < ws.trees.length ; i++) {
-    var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
-    treeHtml.classList.add("tree"+i);
-    treesDiv.append(treeHtml);
+    if (ws.trees[i].rootNode != null) {
+      var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
+      treeHtml.classList.add("tree"+i);
+      treesDiv.append(treeHtml);
+    }
   }
   mainDiv.append(treesDiv);
 
