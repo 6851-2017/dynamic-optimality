@@ -213,6 +213,9 @@ class AvlNode {
   
     /** The size of this node's subtree, including itself */
     this.size = 1;
+
+    /** Pointer to the deque node that also stores this value */
+    this.pointerToDequeNode = null;
   }
   
 
@@ -438,21 +441,25 @@ class AvlNode {
 
   /**
    * Insert the given node into this node's subtree.
+   * Returns the inserted AvlNode, or a list of inserted AvlNodes.
    */
   insert(val) {
     if (typeof val == 'number') {
-      this.insertHelper(val);
+      return this.insertHelper(val);
       //this.rebalance();
     } else {
+      var allInserts = [];
       for (var i = 0; i < val.length; i ++) {
-        this.insert(val[i]);
+        allInserts.push(this.insert(val[i]));
       }
+      return allInserts;
     }
   }
 
   /**
    * Helper for insert - inserts the node, except for
    * rebalancing.
+   * Returns the inserted AvlNode.
    */
   insertHelper(val) {
     if (this.value == val) {
@@ -464,6 +471,7 @@ class AvlNode {
         this.rightChild = new AvlNode(val);
         this.rightChild.parent = this;
         this.updateToRoot();
+        return this.rightChild;
         //this.rebalancePath();
       }
     } else if (this.value > val) {
@@ -473,6 +481,7 @@ class AvlNode {
         this.leftChild = new AvlNode(val);
         this.leftChild.parent = this;
         this.updateToRoot();
+        return this.leftChild;
         //this.rebalancePath();
       }
     }
@@ -664,18 +673,24 @@ class AvlTree {
     if (!this.rootNode) {
       var rootNode = new AvlNode(value);
       this.rootNode = rootNode;
+      return rootNode;
     } else {
-      this.rootNode.insert(value);
+      return this.rootNode.insert(value);
     }
   }
 
+  /**
+   * Inserts {value} and returns the AvlNode with that value.
+   */
   insert(value) {
     if (typeof value == 'number') {
-      this.insertSingle(value);
+      return this.insertSingle(value);
     } else {
+      var allInserts = [];
       for (var i = 0; i < value.length; i ++) {
-        this.insertSingle(value[i]);
+        allInserts.push(this.insertSingle(value[i]));
       }
+      return allInserts;
     } 
   }
 
@@ -889,8 +904,10 @@ class WorkingSetStructure {
       k += 1;
     }
 
-    this.trees[0].insert(value);
-    this.deques[0].pushToFront(new DequeNode(value));
+    var avlNode = this.trees[0].insert(value);
+    var dequeNode = new DequeNode(value);
+    this.deques[0].pushToFront(dequeNode);
+    avlNode.pointerToDequeNode = dequeNode;
     
     this.shift(0, k-1);
   }
@@ -962,6 +979,30 @@ class WorkingSetStructure {
     return node.value;
   }
 }
+
+/** Test for pointerToDequeNode */
+/*
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+console.log(workingSet.trees);
+console.log(workingSet.deques);
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first)
+*/
+
+var workingSet = new WorkingSetStructure();
+workingSet.insert(3);
+workingSet.insert(1);
+workingSet.insert(5);
+console.log(workingSet.trees);
+console.log(workingSet.deques);
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].last)
+console.log(workingSet.trees[0].rootNode.leftChild.pointerToDequeNode == workingSet.deques[0].last.prev)
+console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].first)
+
+
+
 
 /** Test for found bug 
 console.log("BUG TEST");
