@@ -9,10 +9,32 @@ function sleep(milliseconds) {
 }
 
 var insertComplete = true;
+var deleteComplete = true;
+var searchComplete = true;
 var shiftComplete = true;
+
+function justInsertDone() {
+  return insertComplete;
+}
 
 function insertDone() {
   return insertComplete && shiftComplete;
+}
+
+function deleteDone() {
+  return deleteComplete && shiftComplete;
+}
+
+function searchDone() {
+  return searchComplete;
+}
+
+function shiftDone() {
+  return shiftComplete;
+}
+
+function insertAndDeleteDone() {
+  return insertComplete && deleteComplete && shiftComplete;
 }
 
 /*
@@ -175,36 +197,6 @@ class Deque {
   }
 }
 
-
-// Demonstration
-/*
-console.log("deque testing");
-var dequeExample = new Deque();
-
-// Test pushes
-//dequeExample.pushToBack(new DequeNode(5));
-//dequeExample.pushToFront(new DequeNode(3));
-//dequeExample.pushToFront(new DequeNode(2));
-//dequeExample.pushToBack(new DequeNode(15));
-//dequeExample.showDeque();
-
-// Test pops
-//dequeExample.popFromBack();
-//dequeExample.popFromFront();
-//dequeExample.popFromFront();
-//dequeExample.showDeque();
-
-// Test find
-//dequeExample.findAndPop(2);
-//dequeExample.findAndPop(5);
-//dequeExample.findAndPop(15);
-//dequeExample.findAndPop(4);
-//dequeExample.findAndPop(3);
-//dequeExample.showDeque();
-
-
-console.log("end of deque testing");
-*/
 
 /**
  * A class that represents a node in an AVL tree.
@@ -663,6 +655,48 @@ class AvlNode {
    * Returns the AvlNode that contains that value.
    * Returns null if the value is not in this subtree.
    */
+  searchAnimate(value) {
+    searchComplete = false;
+    // $("#status").text("searching for ["+value+"] in tree [");
+    var element = $(".tree-"+this.value);
+    console.log("THIS ELEMENT: "+this.value);
+    element.css("background-color", "#fff47b");
+    if (this.value == value) {
+      element.css("background-color", "#fdc11f");
+      $("#status").text("found ["+value+"]");
+      setTimeout(function() {
+        searchComplete = true;
+      }, 800);
+    } else {
+      var thisNode = this;
+      setTimeout(function() {
+        if (value < thisNode.value && thisNode.leftChild) {
+          thisNode.leftChild.searchAnimate(value);
+        } else if (value > thisNode.value && thisNode.rightChild) {
+          thisNode.rightChild.searchAnimate(value);
+        } else {
+          if (value < thisNode.value) {
+            // highlight LEFTCHILD NULL
+            var nullElt = $(".left-child.parent-"+thisNode.value);
+            nullElt.css("background-color", "#ff6060");
+          } else {
+            // highlight RIGHTCHILD NULL
+            var nullElt = $(".right-child.parent-"+thisNode.value);
+            nullElt.css("background-color", "#ff6060");
+          }
+          setTimeout(function() {
+            searchComplete = true;
+          }, 800)
+        }
+      }, 500);
+    }
+  }
+
+  /**
+  * Search for the given value in this node's subtree.
+  * Returns the AvlNode that contains that value.
+  * Returns null if the value is not in this subtree.
+  */
   search(value) {
     if (this.value == value) {
       return this;
@@ -704,18 +738,18 @@ class AvlTree {
     this.rootNode = null;
   }
 
-  insertSingle(value, treeID=0, numTrees=0) {
+  insertSingle(value) {
     if (!this.rootNode) {
       var rootNode = new AvlNode(value);
       this.rootNode = rootNode;
     } else {
-      this.rootNode.insert(value, treeID, numTrees);
+      this.rootNode.insert(value);
     }
   }
 
-  insert(value, treeID=0, numTrees=0) {
+  insert(value) {
     if (typeof value == 'number') {
-      this.insertSingle(value, treeID, numTrees);
+      this.insertSingle(value);
     } else {
       for (var i = 0; i < value.length; i ++) {
         this.insertSingle(value[i]);
@@ -737,6 +771,15 @@ class AvlTree {
       return false;
     } else {
       return this.rootNode.search(value);
+    }
+  }
+
+  searchAnimate(value) {
+    if (!this.rootNode) {
+      return false;
+    } else {
+      this.rootNode.searchAnimate(value);
+      // return this.rootNode.search(value);
     }
   }
 
@@ -826,14 +869,6 @@ class WorkingSetStructure {
         $(".node").each(function() {
           $(this).css("background-color", "#fff");
         })
-        
-        // for (var whichTree = 0; whichTree < j + 1; whichTree++) {
-        //   if (whichTree != i+1) {
-        //     $('.tree'+whichTree).find('.node').each(function(){
-        //       $(this).css('background-color', '#fff');
-        //     });
-        //   }
-        // }
 
         $("#status").text("shifting ["+item.value+"] into tree "+(i+1));
         var thisSet = this;
@@ -844,9 +879,18 @@ class WorkingSetStructure {
           thisSet.trees[iCopy].delete(itemVal);
           //console.log((iCopy+1)+" "+(jCopy+1));
           thisSet.trees[iCopy + 1].insert(itemVal);
-          setTimeout(function() {
-            shiftComplete = true;
-          }, 500);
+          function checkInsertDone() {
+            if(justInsertDone() == false) {
+              console.log("no (line 880, ws)");
+              window.setTimeout(checkInsertDone, 100); /* this checks the flag every 100 milliseconds*/
+            } else {
+              shiftComplete = true;
+            }
+          }
+          checkInsertDone();
+          // setTimeout(function() {
+          //   shiftComplete = true;
+          // }, 500);
         }, 500);
       }
     } else if (j < h) {
@@ -929,8 +973,8 @@ class WorkingSetStructure {
       k += 1;
       // shiftComplete = true;
     }
-
-    $("#status").text("inserting ["+value+"]");
+    $("#operation").text("insert ["+value+"]");
+    $("#status").text("inserting ["+value+"] into tree 0");
     this.trees[0].insert(value);
     this.deques[0].pushToFront(new DequeNode(value));
     var thisNode = this;
@@ -955,6 +999,8 @@ class WorkingSetStructure {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
+        $("#operation").text("delete ["+value+"]");
+        $("#status").text("deleting ["+value+"] from tree "+i);
         tree.delete(value);
         foundIndex = i;
         this.deques[i].findAndPop(value);
@@ -962,15 +1008,21 @@ class WorkingSetStructure {
       }
     }
     if (foundIndex != null) {
-      this.shift(this.deques.length - 1, foundIndex);
-
-      if (this.trees[this.trees.length - 1].size() == 0) {
-        // We emptied the last one, so remove it
-        this.trees.pop();
-        this.deques.pop();
+      var thisStructure = this;
+      function checkDeleteFlag() {
+        if(deleteDone() == false) {
+          window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
+        } else {
+          thisStructure.shift(thisStructure.deques.length - 1, foundIndex);
+          if (thisStructure.trees[thisStructure.trees.length - 1].size() == 0) {
+            // We emptied the last one, so remove it
+            thisStructure.trees.pop();
+            thisStructure.deques.pop();
+          }
+          return true;
+        }
       }
-
-      return true;
+      checkDeleteFlag();
     } else {
       return false;
     }
@@ -980,7 +1032,7 @@ class WorkingSetStructure {
    * Search for value in the structure and returns that value.
    * Returns null if the value isn't in the structure.
    */ 
-  search(value) {
+  searchFind(value) {
 
     // Go through trees and search for value
     var j = null;
@@ -997,20 +1049,120 @@ class WorkingSetStructure {
     if (j == null) { // if j = 0, j will evaluate to false
       // value is not in the tree
       return null;
+    } else {
+      return j;
     }
 
+    // // Delete value from T_j
+    // this.trees[j].delete(value);
+    // this.deques[j].findAndPop(value);
+
+    // // Insert value into T_1
+    // this.trees[0].insert(value);
+    // this.deques[0].pushToFront(new DequeNode(value));
+
+    // // Shift 1 -> j
+    // this.shift(0, j);
+
+    // return node.value;
+
+  }
+
+  searchFinish(value, j) {
+    var thisStructure = this;
     // Delete value from T_j
-    this.trees[j].delete(value);
+    if (j != 0) {
+      this.trees[j].delete(value);
+      function checkDeleteFlag() {
+        if(deleteDone() == false) {
+          window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
+        } else {
+          thisStructure.trees[0].insert(value);
+        }
+      }
+      checkDeleteFlag();
+    }
+
     this.deques[j].findAndPop(value);
 
     // Insert value into T_1
-    this.trees[0].insert(value);
     this.deques[0].pushToFront(new DequeNode(value));
 
     // Shift 1 -> j
-    this.shift(0, j);
-
-    return node.value;
+    function checkInsertComplete() {
+      if(insertDone() == false) {
+        window.setTimeout(checkInsertComplete, 100); /* this checks the flag every 100 milliseconds*/
+      } else {
+        // FIRST RE RENDER!!!!!!!!
+        var container = $(".container");
+        var workingSetHtml = getWorkingSetHtml(thisStructure);
+        console.log(workingSetHtml);
+        container.html(workingSetHtml);
+        console.log("re rendered");
+        setTimeout(function(){
+          // THEN:
+          thisStructure.shift(0, j);
+        }, 500);
+      }
+    }
+    checkInsertComplete();
+    // return value;
   }
+
+  /**
+   * Search for value in the structure and returns that value.
+   * Returns null if the value isn't in the structure.
+   */ 
+  searchAnimate(value, j) {
+
+    if (j == null) { // if j = 0, j will evaluate to false
+      // value is not in the tree
+      return null;
+    } else {
+      var thisStructure = this;
+      for (var i = 0; i < j+1; i++) {
+        $("#status").text("searching for ["+value+"] in tree ["+i+"]");
+        var iCopy = i;
+        function checkSearchFlag() {
+          if(searchDone() == false) {
+            window.setTimeout(checkSearchFlag, 100); /* this checks the flag every 100 milliseconds*/
+          } else {
+            $(".null-elt").each(function() {
+              $(this).css("background-color", "#e3e3e3");
+            });
+
+            $(".node").each(function() {
+              $(this).css("background-color", "#fff");
+            })
+            thisStructure.trees[iCopy].searchAnimate(value);
+          }
+        }
+        checkSearchFlag();
+      }
+    }
+  }
+
 }
 
+// function getWorkingSetHtml(ws) {
+//   var mainDiv = document.createElement('div');
+
+//   var dequesDiv = document.createElement('div');
+//   dequesDiv.setAttribute('id', 'deques');
+//   for (var i = 0; i < ws.deques.length ; i++) {
+//     var dequeHtml = getDequeHtml(ws.deques[i]);
+//     dequesDiv.append(dequeHtml);
+//   }
+//   mainDiv.append(dequesDiv);
+
+//   var treesDiv = document.createElement('div');
+//   treesDiv.setAttribute('id', 'trees');
+//   for (var i = 0; i < ws.trees.length ; i++) {
+//     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
+//     treeHtml.classList.add("tree"+i);
+//     treesDiv.append(treeHtml);
+//   }
+//   mainDiv.append(treesDiv);
+
+//   return mainDiv;
+// }

@@ -63,24 +63,16 @@ $(document).ready(function() {
           console.log("no");
           window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
         } else {
+          console.log("new workingset: ");
+          console.log(workingSet);
+          $("#operation").text("none");
           $("#status").text("idle");
           workingSetHtml = getWorkingSetHtml(workingSet)
           container.html(workingSetHtml);
-          // setTimeout(function() {
-          //   workingSetHtml = getWorkingSetHtml(workingSet)
-          //   container.html(workingSetHtml);
-          // }, 100);
         }
       }
       checkInsertFlag();
     }
-      // Reset HTML
-      // container.delay(2000)
-      //          .queue(function(n) {
-      //             workingSetHtml = getWorkingSetHtml(workingSet)
-      //             container.html(workingSetHtml);
-      //             n();
-      //          });
   });
 
   // Delete operation.
@@ -89,9 +81,21 @@ $(document).ready(function() {
       console.log("Deleting", userInput)
       var del = workingSet.delete(userInput);
       if (del) {
-        var workingSetHtml = getWorkingSetHtml(workingSet);
+        //var workingSetHtml = getWorkingSetHtml(workingSet);
+        function checkDeleteFlag() {
+          if(deleteDone() == false) {
+            console.log("no (delete)");
+            window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
+          } else {
+            $("#operation").text("none");
+            $("#status").text("idle");
+            workingSetHtml = getWorkingSetHtml(workingSet)
+            container.html(workingSetHtml);
+          }
+        }
+        checkDeleteFlag();
         // Reset HTML
-        container.html(workingSetHtml);
+        //container.html(workingSetHtml);
       } else if (!del) {
         var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
         alert(helpText);
@@ -102,16 +106,56 @@ $(document).ready(function() {
   // Search operation.
   $('#search').click(function() {
     if (userInput) {
-      var item = workingSet.search(userInput);
-      if (item == null) {
+      var indexOfElt = workingSet.searchFind(userInput);
+      if (indexOfElt == null) {
         alert(userInput + " is not in the structure.");
       } else {
         // Move element to beginning of deque
         var dequeElement = $('#deque-' + userInput);
         var newParent = $('#deques').children()[0];
         // The 'HEAD' block is the fist child, so insert at 1
-        moveAnimate(dequeElement, newParent, 1); 
 
+        $("#operation").text("search ["+userInput+"]");
+        workingSet.searchAnimate(userInput, indexOfElt);
+        function checkSearchFlag() {
+          if(searchDone() == false) {
+            console.log("no (search)");
+            window.setTimeout(checkSearchFlag, 100); /* this checks the flag every 100 milliseconds*/
+          } else {
+            moveAnimate(dequeElement, newParent, 1);
+            workingSet.searchFinish(userInput, indexOfElt);
+            function checkSearchFinished() {
+              if (insertAndDeleteDone() == false) {
+                console.log("searchFinish NOT DONE!!!");
+                window.setTimeout(checkSearchFinished, 100);
+              } else {
+                function checkShiftFinished() {
+                  if (shiftDone() == false) {
+                    console.log('SHIFT NOT DONE!!!!!!!!!');
+                    window.setTimeout(checkShiftFinished, 100)
+                  } else {
+                    $("#operation").text("none");
+                    $("#status").text("idle");
+                    console.log("FINAL RE RENDER");
+                    workingSetHtml = getWorkingSetHtml(workingSet)
+                    container.html(workingSetHtml);
+                  }
+                }
+                setTimeout(function () {
+                  checkShiftFinished();
+                }, 510);
+                // setTimeout(function () {
+                //   $("#operation").text("none");
+                //   $("#status").text("idle");
+                //   workingSetHtml = getWorkingSetHtml(workingSet)
+                //   container.html(workingSetHtml);
+                // }, 800);
+              }
+            }
+            checkSearchFinished();
+          }
+        }
+        checkSearchFlag();
         // var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
         // container.html(workingSetHtml);

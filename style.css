@@ -29,16 +29,22 @@ body {
     float: left;
 }
 
-#status {
+#status, #operation {
     display: inline-block;
 }
 
-#statusContainer {
+#statusMessages{
+    width: 100vh
+}
+
+#statusContainer, #operationContainer {
     padding: 10px;
     margin: 20px;
+    margin-right: 0px;
     background-color: #def4fe;
     border-radius: 10px;
     width: fit-content;
+    display: inline-block;
 }
 
 .deque {
