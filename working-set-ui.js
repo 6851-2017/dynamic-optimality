@@ -466,7 +466,6 @@ class AvlNode {
   insertHelper(val) {
     insertComplete = false;
     var element = $(".tree-"+this.value);
-    console.log(".tree-"+this.value+" : "+element);
 
     element.css("background-color", "#def4fe");
 
@@ -889,8 +888,10 @@ class WorkingSetStructure {
           checkInsertDone();
         }, 500);
       }
+      // h 1, j 0
     } else if (j < h) {
       for (var i = h; i > j; i--) {
+        console.log("shifting from tree "+i);
         // deque and item from Q_i, and enqueue the item into Q_i-1
         var item = this.deques[i].popFromFront();
         if (!item) {
@@ -922,7 +923,6 @@ class WorkingSetStructure {
           setTimeout(function() {
             function checkInsertDone() {
               if(justInsertDone() == false) {
-                console.log("no (line 925, ws)");
                 window.setTimeout(checkInsertDone, 100); /* this checks the flag every 100 milliseconds*/
               } else {
                 shiftComplete = true;
@@ -933,7 +933,6 @@ class WorkingSetStructure {
         }, 500);
       }
     } else {
-      console.log("shifting x to x");
       setTimeout(function() {
         shiftComplete = true;
       }, 10);
@@ -1014,15 +1013,12 @@ class WorkingSetStructure {
   }
 
   deleteFinish(value, j) {
-    console.log("from deleteFinish");
-    console.log(this);
-    console.log("LAST TREE SIZE "+this.trees[this.trees.length - 1].size());
     if (this.trees.length == 0 || this.trees[this.trees.length - 1].size() == 0) {
       // last one empty, so remove it
       this.trees.pop();
       this.deques.pop();
     } else {
-      this.shift(this.deques.length - 1, j);
+      // this.shift(this.deques.length - 1, j);
       if (this.trees[this.trees.length - 1].size() == 0) {
         // We emptied the last one, so remove it
         this.trees.pop();
@@ -1050,21 +1046,18 @@ class WorkingSetStructure {
     var thisStructure = this;
     setTimeout(function () {
       var container = $(".container");
-      console.log("-----");
-      console.log(thisStructure);
-      console.log("-----");
       var workingSetHtml = getWorkingSetHtml(thisStructure);
       container.html(workingSetHtml);
       console.log("re rendered FROM DELETE ANIMATE");
       setTimeout(function(){
         // THEN:
         console.log('SHIFTING FROM DELETE ANIMATE');
-        console.log(thisStructure.deques.length - 1+" "+ index)
         thisStructure.shift(thisStructure.deques.length - 1, index);
       }, 500);
       // thisStructure.shift(thisStructure.deques.length - 1, foundIndex);
       function checkShiftFlag() {
         if (shiftDone() == false) {
+          console.log('shifting not done u bich!!');
           window.setTimeout(checkShiftFlag, 100);
         } else {
           if (thisStructure.trees[thisStructure.trees.length - 1].size() == 0) {
@@ -1074,7 +1067,7 @@ class WorkingSetStructure {
           }
           setTimeout(function() {
             deleteComplete = true;
-          }, 800);
+          }, 500);
         }
       }
       setTimeout(function () {

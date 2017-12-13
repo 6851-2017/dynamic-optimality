@@ -84,11 +84,10 @@ $(document).ready(function() {
         workingSet.deleteAnimate(userInput, del);
         function checkDeleteFlag() {
           if(deleteDone() == false) {
-            console.log("no (delete)");
             window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
           } else {
-            $("#operation").text("none");
-            $("#status").text("idle");
+            // $("#operation").text("none");
+            // $("#status").text("idle");
             var sizeNow = workingSet.trees.length;
             if (sizeNow == prevSize){
               workingSet.deleteFinish(userInput, del);
@@ -107,6 +106,10 @@ $(document).ready(function() {
               setTimeout(function () {
                 checkShiftFinished();
               }, 510);
+            } else {
+              console.log("sizeNow != prevSize");
+              workingSetHtml = getWorkingSetHtml(workingSet)
+              container.html(workingSetHtml);
             }
           }
         }
