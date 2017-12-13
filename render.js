@@ -218,7 +218,9 @@ function animateDequeSearch(element, deque) {
 
 
     temp.animate(
-      {'left': elementToAnimate.offset().left + moveRightAmount - elementMarginLeft},
+      {'left': elementToAnimate.offset().left + moveRightAmount - elementMarginLeft,
+       'top': elementToAnimate.offset().top - elementMarginTop
+      },
       'slow',
       'linear',
       // Create a separate closure so we can keep what
@@ -249,13 +251,19 @@ function animateDequeSearch(element, deque) {
     'visibility': 'visible'
   });
 
-  tempElement.animate({'left': newOffset.left - elementMarginLeft}, 'slow', 'linear',function() {
-    setTimeout(function() {
-      tempElement.remove();
-      deque.insertAt(1, element);
-      element.css('visibility', 'visible');
-    }, 500);
-  });
+  tempElement.animate(
+    {'left': newOffset.left - elementMarginLeft,
+     'top': newOffset.top - elementMarginTop
+    },
+    'slow',
+    'linear',
+    function() {
+      setTimeout(function() {
+        tempElement.remove();
+        deque.insertAt(1, element);
+        element.css('visibility', 'visible');
+      }, 500);
+    });
 }
 
 /**
