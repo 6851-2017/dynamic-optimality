@@ -107,15 +107,6 @@ $(document).ready(function() {
       if (indexOfElt == null) {
         alert(userInput + " is not in the structure.");
       } else {
-        // Move element to beginning of deque
-        var dequeElement = $('#deque-' + userInput);
-// <<<<<<< HEAD
-        var newParent = $($('#deques').children()[0]);
-        // The 'HEAD' block is the fist child, so insert at 1
-// =======
-        // var newParent = $($('#deques').children()[0]);
-        // animateDequeSearch(dequeElement, newParent);
-// >>>>>>> 22184f80e7add8e680f5eb3177b5a9556f2d0100
 
         $("#operation").text("search ["+userInput+"]");
         workingSet.searchAnimate(userInput, indexOfElt);
@@ -124,8 +115,18 @@ $(document).ready(function() {
             console.log("no (search)");
             window.setTimeout(checkSearchFlag, 100); /* this checks the flag every 100 milliseconds*/
           } else {
-            // moveAnimate(dequeElement, newParent, 1);
-            animateDequeSearch(dequeElement, newParent);
+            // Move element to beginning of deque
+            var dequeElement = $('#deque-' + userInput);
+            var newParent = $($('#deques').children()[0]);
+            
+            var shiftEverything = true;
+            if (indexOfElt == 0) {
+              // Element is within the first deque,
+              // so don't shift everything
+              shiftEverything = false;
+            }
+            animateDequePushToFront(dequeElement, newParent, shiftEverything);
+            
             workingSet.searchFinish(userInput, indexOfElt);
             function checkSearchFinished() {
               if (insertAndDeleteDone() == false) {
@@ -172,13 +173,16 @@ $(document).on("mouseleave", ".node", function() {
   $('.'+val).css("background-color", "#fff");
 });
 
-
+// TODO: Need function to have a move from end of deque to beginning of another deque
 /**
- * Moves element to front of deque and shifts all
- * the values that were previously in front of dequeNode
- * over by one.
+ * Animate the insertion of {element} to the front of {deque}.
+ * if {shiftEverything} is true, then everything else in the deque
+ * should shift to the right. Otherwise, only shift up to
+ * what index {element} is currently at.
+ * ({shiftEverything} should be false if element is already in {deque}
+ *  and true otherwise.)
  */
-function animateDequeSearch(element, deque) {
+function animateDequePushToFront(element, deque, shiftEverything) {
   var elementMarginTop = parseInt(element.css('marginTop'));
   var elementMarginLeft = parseInt(element.css('marginLeft'));
 
@@ -191,7 +195,12 @@ function animateDequeSearch(element, deque) {
 
   // TODO: Won't work w/ < 2 elements in deque
 
-  var indexOfElement = element.index();
+  var indexOfElement;
+  if (!shiftEverything) {
+    indexOfElement = element.index();
+  } else {
+    indexOfElement = deque.children().length;
+  }
 
 
   // Hide all the elements that will move right by one
