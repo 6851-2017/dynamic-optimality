@@ -107,13 +107,20 @@ class Deque {
   }
 
   /**
-   * Print the deque from front to back.
+   * Deletes {dequeNode} from the deque.
    */
-  showDeque() {
-    var currentNode = this.first;
-    while (currentNode) {
-      console.log(currentNode);
-      currentNode = currentNode.next;
+  deleteMe(dequeNode) {
+    if (dequeNode.next) {
+      dequeNode.next.prev = dequeNode.prev;
+    } else {
+      // It's the last one
+      this.last = dequeNode.prev;
+    }
+    if (dequeNode.prev) {
+      dequeNode.prev.next = dequeNode.next;
+    } else {
+      // It's the first one
+      this.first = dequeNode.next;
     }
   }
 
@@ -146,6 +153,18 @@ class Deque {
     return null;
   }
 
+  /**
+   * Print the deque from front to back.
+   */
+  showDeque() {
+    var currentNode = this.first;
+    while (currentNode) {
+      console.log(currentNode);
+      currentNode = currentNode.next;
+    }
+  }
+
+
   toString() {
     var total = '[';
     var currentNode = this.first;
@@ -158,6 +177,35 @@ class Deque {
   }
 }
 
+/** Test of deleteMe 
+// Delete in middle
+var deque = new Deque();
+var middleNode = new DequeNode(4);
+deque.pushToFront(new DequeNode(5));
+deque.pushToFront(middleNode);
+deque.pushToFront(new DequeNode(3));
+deque.deleteMe(middleNode);
+console.log(deque);
+
+
+// Delete beginning
+var deque = new Deque();
+var firstNode = new DequeNode(4);
+deque.pushToBack(new DequeNode(5));
+deque.pushToFront(firstNode);
+deque.deleteMe(firstNode);
+console.log(deque);
+
+
+// Delete end
+var deque = new Deque();
+var lastNode = new DequeNode(4);
+deque.pushToBack(new DequeNode(7));
+deque.pushToBack(lastNode);
+deque.deleteMe(lastNode);
+console.log(deque);
+
+*/
 
 // Demonstration
 /*
@@ -213,6 +261,9 @@ class AvlNode {
   
     /** The size of this node's subtree, including itself */
     this.size = 1;
+
+    /** Pointer to the deque node that also stores this value */
+    this.pointerToDequeNode = null;
   }
   
 
@@ -357,6 +408,7 @@ class AvlNode {
 
   updateRoot(newRoot) {
     this.value = newRoot.value;
+    this.pointerToDequeNode = newRoot.pointerToDequeNode;
     this.leftChild = newRoot.leftChild;
     if (this.leftChild != null) {
       this.leftChild.parent = this;
@@ -386,6 +438,7 @@ class AvlNode {
     }
     newNode.height = this.height;
     newNode.parent = this.parent;
+    newNode.pointerToDequeNode = this.pointerToDequeNode;
     return newNode;
   }
   
@@ -438,41 +491,47 @@ class AvlNode {
 
   /**
    * Insert the given node into this node's subtree.
+   * Returns the inserted AvlNode, or a list of inserted AvlNodes.
    */
   insert(val) {
     if (typeof val == 'number') {
-      this.insertHelper(val);
+      return this.insertHelper(val);
       //this.rebalance();
     } else {
+      var allInserts = [];
       for (var i = 0; i < val.length; i ++) {
-        this.insert(val[i]);
+        allInserts.push(this.insert(val[i]));
       }
+      return allInserts;
     }
   }
 
   /**
    * Helper for insert - inserts the node, except for
    * rebalancing.
+   * Returns the inserted AvlNode.
    */
   insertHelper(val) {
     if (this.value == val) {
       throw new Error("value " + val + " already exists in tree");
     } else if (this.value < val) {
       if (this.rightChild != null) {
-        this.rightChild.insertHelper(val);
+        return this.rightChild.insertHelper(val);
       } else {
         this.rightChild = new AvlNode(val);
         this.rightChild.parent = this;
         this.updateToRoot();
+        return this.rightChild;
         //this.rebalancePath();
       }
     } else if (this.value > val) {
       if (this.leftChild != null) {
-        this.leftChild.insertHelper(val);
+        return this.leftChild.insertHelper(val);
       } else {
         this.leftChild = new AvlNode(val);
         this.leftChild.parent = this;
         this.updateToRoot();
+        return this.leftChild;
         //this.rebalancePath();
       }
     }
@@ -516,10 +575,12 @@ class AvlNode {
     }
   }
 
-/**
+  /**
    * Delete the given value from this node's subtree.
-   * Returns the new root of the tree if the value
-   * was in this node's subtree and false otherwise.
+   * Returns a two element list. The first element is
+   * the new root of the tree and the second element is
+   * the node that was deleted.
+   * If {val} is not in the tree, returns null.
    */  
   delete(val) {
     var r = this.deleteHelper(val);
@@ -530,8 +591,10 @@ class AvlNode {
   /**
    * Helper function for delete - carries out delete
    * operation, besides rebalancing.
-   * Returns the new root of the tree, or null if
-   * the delete is unsuccessful.
+   * Returns a two element list. The first element is
+   * the new root of the tree and the second element is
+   * the node that was deleted.
+   * If {val} is not in the tree, returns null.
    */
   deleteHelper(val) {
     var node = this.search(val);
@@ -561,9 +624,9 @@ class AvlNode {
       //parent.rebalancePath();
     }
     if (deletingRoot == true) {
-      return returnNode; 
+      return [returnNode, node]; 
     } else {
-      return this;
+      return [this, node];
     }
   }
 
@@ -664,27 +727,44 @@ class AvlTree {
     if (!this.rootNode) {
       var rootNode = new AvlNode(value);
       this.rootNode = rootNode;
+      return rootNode;
     } else {
-      this.rootNode.insert(value);
+      return this.rootNode.insert(value);
     }
   }
 
+  /**
+   * Inserts {value} and returns the AvlNode with that value.
+   */
   insert(value) {
     if (typeof value == 'number') {
-      this.insertSingle(value);
+      return this.insertSingle(value);
     } else {
+      var allInserts = [];
       for (var i = 0; i < value.length; i ++) {
-        this.insertSingle(value[i]);
+        allInserts.push(this.insertSingle(value[i]));
       }
+      return allInserts;
     } 
   }
 
+
+ /* Deletes {value} from the tree.
+  * Returns the node that was deleted.
+  * If {val} is not in the tree, returns null.
+  */
   delete(value) {
     if (!this.rootNode) {
       return false;
     } else {
-      var newRoot = this.rootNode.delete(value);
-      this.rootNode = newRoot;
+      var returnVal = this.rootNode.delete(value);
+      if (returnVal) {
+        this.rootNode = returnVal[0];
+        return returnVal[1];
+      } else {
+        return null;
+      }
+
     }
   }
 
@@ -829,10 +909,13 @@ class WorkingSetStructure {
       for (var i = h; i < j; i++) {
         // deque and item from Q_i, and enqueue the item into Q_i+1
         var item = this.deques[i].popFromBack();
-        this.deques[i + 1].pushToFront(new DequeNode(item.value));
+        var insertedDequeNode = new DequeNode(item.value);
+        this.deques[i + 1].pushToFront(insertedDequeNode);
         // delete the item from T_i and insert into T_i+1
+
         this.trees[i].delete(item.value);
-        this.trees[i + 1].insert(item.value);
+        var insertedNode = this.trees[i + 1].insert(item.value);
+        insertedNode.pointerToDequeNode = insertedDequeNode;
       }
     } else if (j < h) {
       for (var i = h; i > j; i--) {
@@ -843,10 +926,12 @@ class WorkingSetStructure {
           continue;
         }
 
-        this.deques[i - 1].pushToBack(new DequeNode(item.value));
+        var insertedDequeNode = new DequeNode(item.value);
+        this.deques[i - 1].pushToBack(insertedDequeNode);
         // delete the item from T_i and insert into T_i-1
         this.trees[i].delete(item.value);
-        this.trees[i - 1].insert(item.value);
+        var insertedNode = this.trees[i - 1].insert(item.value);
+        insertedNode.pointerToDequeNode = insertedDequeNode;
       }
     }
   }
@@ -889,8 +974,10 @@ class WorkingSetStructure {
       k += 1;
     }
 
-    this.trees[0].insert(value);
-    this.deques[0].pushToFront(new DequeNode(value));
+    var avlNode = this.trees[0].insert(value);
+    var dequeNode = new DequeNode(value);
+    this.deques[0].pushToFront(dequeNode);
+    avlNode.pointerToDequeNode = dequeNode;
     
     this.shift(0, k-1);
   }
@@ -904,9 +991,13 @@ class WorkingSetStructure {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
-        tree.delete(value);
         foundIndex = i;
-        this.deques[i].findAndPop(value);
+        
+        var deletedAvlNode = tree.delete(value);
+
+        var deletedDequeNode = deletedAvlNode.pointerToDequeNode;
+        this.deques[foundIndex].deleteMe(deletedDequeNode);
+
         break;
       }
     }
@@ -948,13 +1039,30 @@ class WorkingSetStructure {
       return null;
     }
 
-    // Delete value from T_j
-    this.trees[j].delete(value);
-    this.deques[j].findAndPop(value);
+    var deletedDequeNode;
+    var insertedAvlNode;
+
+    // Only move in tree if they're not currently
+    // in the first tree
+    if (j != 0) {
+      var deletedAvlNode = this.trees[j].delete(value);
+      insertedAvlNode = this.trees[0].insert(value);
+
+      deletedDequeNode = deletedAvlNode.pointerToDequeNode;
+      this.deques[j].deleteMe(deletedDequeNode);
+
+    } else {
+      // Tree stays the same, need to remove the value
+      // from the first deque
+      deletedDequeNode = this.deques[0].findAndPop(value);
+    } 
 
     // Insert value into T_1
-    this.trees[0].insert(value);
-    this.deques[0].pushToFront(new DequeNode(value));
+    this.deques[0].pushToFront(deletedDequeNode);
+
+    if (insertedAvlNode) {
+      insertedAvlNode.pointerToDequeNode = deletedDequeNode;
+    }
 
     // Shift 1 -> j
     this.shift(0, j);
@@ -962,6 +1070,102 @@ class WorkingSetStructure {
     return node.value;
   }
 }
+
+/** Test for deleting and searching using pointerToDequeNode  
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.search(1);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first)
+console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].last)
+*/
+
+/*
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.insert(3);
+workingSet.insert(4);
+workingSet.insert(5);
+workingSet.insert(6);
+workingSet.search(2);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.trees[1].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+console.log(workingSet.deques[1].toString());
+// Should be true:
+console.log(workingSet.trees[0].rootNode.leftChild.pointerToDequeNode == workingSet.deques[0].first) // 2
+console.log(workingSet.trees[0].rootNode.rightChild.rightChild.pointerToDequeNode == workingSet.deques[0].first.next) // 6
+console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].first.next.next) // 5
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].last) // 4
+console.log(workingSet.trees[1].rootNode.rightChild.pointerToDequeNode == workingSet.deques[1].first) // 3
+console.log(workingSet.trees[1].rootNode.pointerToDequeNode == workingSet.deques[1].last) // 1
+*/
+
+/*
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.delete(1);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first) // 2
+*/
+
+/*
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.insert(3);
+workingSet.insert(4);
+workingSet.insert(5);
+workingSet.insert(6);
+workingSet.delete(6);
+workingSet.delete(1);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+// Should be true:
+console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].first) // 5
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first.next) // 4
+console.log(workingSet.trees[0].rootNode.leftChild.pointerToDequeNode == workingSet.deques[0].last.prev) // 3
+console.log(workingSet.trees[0].rootNode.leftChild.leftChild.pointerToDequeNode == workingSet.deques[0].last) // 2
+*/
+
+/** Test for pointerToDequeNode */
+/*
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+console.log(workingSet.trees);
+console.log(workingSet.deques);
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first)
+
+
+var workingSet = new WorkingSetStructure();
+workingSet.insert(3);
+workingSet.insert(1);
+workingSet.insert(5);
+console.log(workingSet.trees);
+console.log(workingSet.deques);
+// Should be true:
+console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].last)
+console.log(workingSet.trees[0].rootNode.leftChild.pointerToDequeNode == workingSet.deques[0].last.prev)
+console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].first)
+*/
+
+
 
 /** Test for found bug 
 console.log("BUG TEST");
