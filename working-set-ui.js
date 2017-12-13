@@ -467,7 +467,7 @@ class AvlNode {
     insertComplete = false;
     var element = $(".tree-"+this.value);
 
-    element.css("background-color", "#def4fe");
+    element.css("background-color", "#74d2e3");
 
     var thisNode = this;
     setTimeout(function() {
@@ -478,7 +478,7 @@ class AvlNode {
           thisNode.rightChild.insertHelper(val);
         } else {
           var nullElt = $(".right-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#7bd6ff");
+          nullElt.css("background-color", "#2c98ab");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -496,7 +496,7 @@ class AvlNode {
           thisNode.leftChild.insertHelper(val);
         } else {
           var nullElt = $(".left-child.parent-"+thisNode.value);
-          nullElt.css("background-color", "#7bd6ff");
+          nullElt.css("background-color", "#2c98ab");
           nullElt.delay(500)
                  .queue(function(n) {
                     nullElt.text(val);
@@ -659,9 +659,9 @@ class AvlNode {
     // $("#status").text("searching for ["+value+"] in tree [");
     var element = $(".tree-"+this.value);
     console.log("THIS ELEMENT: "+this.value);
-    element.css("background-color", "#fff47b");
+    element.css("background-color", "#ffed24");
     if (this.value == value) {
-      element.css("background-color", "#fdc11f");
+      element.css("background-color", "#ff9024");
       $("#status").text("found ["+value+"]");
       setTimeout(function() {
         searchComplete = true;
@@ -677,11 +677,11 @@ class AvlNode {
           if (value < thisNode.value) {
             // highlight LEFTCHILD NULL
             var nullElt = $(".left-child.parent-"+thisNode.value);
-            nullElt.css("background-color", "#ff6060");
+            nullElt.css("background-color", "#ff3d3d");
           } else {
             // highlight RIGHTCHILD NULL
             var nullElt = $(".right-child.parent-"+thisNode.value);
-            nullElt.css("background-color", "#ff6060");
+            nullElt.css("background-color", "#ff3d3d");
           }
           setTimeout(function() {
             searchComplete = true;
@@ -858,7 +858,7 @@ class WorkingSetStructure {
         this.deques[i + 1].pushToFront(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i+1
         var nodeElt = $("."+item.value);
-        nodeElt.css("background-color", "#defee2");
+        nodeElt.css("background-color", "#69d376");
         nodeElt.removeClass("node");
 
         $(".null-elt").each(function() {
@@ -902,7 +902,7 @@ class WorkingSetStructure {
         this.deques[i - 1].pushToBack(new DequeNode(item.value));
         // delete the item from T_i and insert into T_i-1
         var nodeElt = $("."+item.value);
-        nodeElt.css("background-color", "#defee2");
+        nodeElt.css("background-color", "#69d376");
         nodeElt.removeClass("node");
 
         $(".null-elt").each(function() {
