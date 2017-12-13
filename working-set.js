@@ -107,6 +107,24 @@ class Deque {
   }
 
   /**
+   * Deletes {dequeNode} from the deque.
+   */
+  deleteMe(dequeNode) {
+    if (dequeNode.next) {
+      dequeNode.next.prev = dequeNode.prev;
+    } else {
+      // It's the last one
+      this.last = dequeNode.prev;
+    }
+    if (dequeNode.prev) {
+      dequeNode.prev.next = dequeNode.next;
+    } else {
+      // It's the first one
+      this.first = dequeNode.next;
+    }
+  }
+
+  /**
    * Print the deque from front to back.
    */
   showDeque() {
@@ -117,34 +135,6 @@ class Deque {
     }
   }
 
-  /**
-   * Finds value in the deque and removes it.
-   * Returns the node with that value, or null
-   *   if the value was not in the deque.
-   */
-  findAndPop(value) {
-    var currentNode = this.first;
-    while (currentNode) {
-      if (currentNode.value == value) {
-
-        if (currentNode.prev) {
-          currentNode.prev.next = currentNode.next;
-        } else {
-          this.first = currentNode.next;
-        }
-
-        if (currentNode.next) {
-          currentNode.next.prev = currentNode.prev;
-        } else {
-          this.last = currentNode.prev;
-        }
-
-        return currentNode;
-      }
-      currentNode = currentNode.next;
-    }
-    return null;
-  }
 
   toString() {
     var total = '[';
@@ -158,6 +148,35 @@ class Deque {
   }
 }
 
+/** Test of deleteMe 
+// Delete in middle
+var deque = new Deque();
+var middleNode = new DequeNode(4);
+deque.pushToFront(new DequeNode(5));
+deque.pushToFront(middleNode);
+deque.pushToFront(new DequeNode(3));
+deque.deleteMe(middleNode);
+console.log(deque);
+
+
+// Delete beginning
+var deque = new Deque();
+var firstNode = new DequeNode(4);
+deque.pushToBack(new DequeNode(5));
+deque.pushToFront(firstNode);
+deque.deleteMe(firstNode);
+console.log(deque);
+
+
+// Delete end
+var deque = new Deque();
+var lastNode = new DequeNode(4);
+deque.pushToBack(new DequeNode(7));
+deque.pushToBack(lastNode);
+deque.deleteMe(lastNode);
+console.log(deque);
+
+*/
 
 // Demonstration
 /*
@@ -525,10 +544,12 @@ class AvlNode {
     }
   }
 
-/**
+  /**
    * Delete the given value from this node's subtree.
-   * Returns the new root of the tree if the value
-   * was in this node's subtree and false otherwise.
+   * Returns a two element list. The first element is
+   * the new root of the tree and the second element is
+   * the node that was deleted.
+   * If {val} is not in the tree, returns null.
    */  
   delete(val) {
     var r = this.deleteHelper(val);
@@ -539,8 +560,10 @@ class AvlNode {
   /**
    * Helper function for delete - carries out delete
    * operation, besides rebalancing.
-   * Returns the new root of the tree, or null if
-   * the delete is unsuccessful.
+   * Returns a two element list. The first element is
+   * the new root of the tree and the second element is
+   * the node that was deleted.
+   * If {val} is not in the tree, returns null.
    */
   deleteHelper(val) {
     var node = this.search(val);
@@ -570,9 +593,9 @@ class AvlNode {
       //parent.rebalancePath();
     }
     if (deletingRoot == true) {
-      return returnNode; 
+      return [returnNode, node]; 
     } else {
-      return this;
+      return [this, node];
     }
   }
 
@@ -694,12 +717,23 @@ class AvlTree {
     } 
   }
 
+
+ /* Deletes {value} from the tree.
+  * Returns the node that was deleted.
+  * If {val} is not in the tree, returns null.
+  */
   delete(value) {
     if (!this.rootNode) {
       return false;
     } else {
-      var newRoot = this.rootNode.delete(value);
-      this.rootNode = newRoot;
+      var returnVal = this.rootNode.delete(value);
+      if (returnVal) {
+        this.rootNode = returnVal[0];
+        return returnVal[1];
+      } else {
+        return null;
+      }
+
     }
   }
 
@@ -921,9 +955,13 @@ class WorkingSetStructure {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
-        tree.delete(value);
         foundIndex = i;
-        this.deques[i].findAndPop(value);
+        
+        var deletedAvlNode = tree.delete(value);
+
+        var deletedDequeNode = deletedAvlNode.pointerToDequeNode;
+        this.deques[foundIndex].deleteMe(deletedDequeNode);
+
         break;
       }
     }
@@ -966,8 +1004,10 @@ class WorkingSetStructure {
     }
 
     // Delete value from T_j
-    this.trees[j].delete(value);
-    this.deques[j].findAndPop(value);
+    var deletedAvlNode = this.trees[j].delete(value);
+
+    var deletedDequeNode = deletedAvlNode.pointerToDequeNode;
+    this.deques[j].deleteMe(deletedDequeNode);
 
     // Insert value into T_1
     this.trees[0].insert(value);
@@ -980,6 +1020,28 @@ class WorkingSetStructure {
   }
 }
 
+/** Test for deleting and searching using pointerToDequeNode 
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.search(1);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+*/
+
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.delete(1);
+console.log(workingSet.trees);
+console.log(workingSet.trees[0].rootNode.toString());
+console.log(workingSet.deques);
+console.log(workingSet.deques[0].toString());
+
+
+
 /** Test for pointerToDequeNode */
 /*
 var workingSet = new WorkingSetStructure();
@@ -988,7 +1050,7 @@ console.log(workingSet.trees);
 console.log(workingSet.deques);
 // Should be true:
 console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first)
-*/
+
 
 var workingSet = new WorkingSetStructure();
 workingSet.insert(3);
@@ -1000,7 +1062,7 @@ console.log(workingSet.deques);
 console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].last)
 console.log(workingSet.trees[0].rootNode.leftChild.pointerToDequeNode == workingSet.deques[0].last.prev)
 console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].first)
-
+*/
 
 
 
