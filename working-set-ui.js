@@ -1094,6 +1094,8 @@ class WorkingSetStructure {
         window.setTimeout(checkInsertComplete, 100); /* this checks the flag every 100 milliseconds*/
       } else {
         // FIRST RE RENDER!!!!!!!!
+        console.log("trying first rerender");
+        console.log(thisStructure);
         var container = $(".container");
         var workingSetHtml = getWorkingSetHtml(thisStructure);
         console.log(workingSetHtml);

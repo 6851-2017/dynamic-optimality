@@ -109,13 +109,8 @@ $(document).ready(function() {
       } else {
         // Move element to beginning of deque
         var dequeElement = $('#deque-' + userInput);
-// <<<<<<< HEAD
         var newParent = $($('#deques').children()[0]);
         // The 'HEAD' block is the fist child, so insert at 1
-// =======
-        // var newParent = $($('#deques').children()[0]);
-        // animateDequeSearch(dequeElement, newParent);
-// >>>>>>> 22184f80e7add8e680f5eb3177b5a9556f2d0100
 
         $("#operation").text("search ["+userInput+"]");
         workingSet.searchAnimate(userInput, indexOfElt);
@@ -433,9 +428,11 @@ function getWorkingSetHtml(ws) {
   var treesDiv = document.createElement('div');
   treesDiv.setAttribute('id', 'trees');
   for (var i = 0; i < ws.trees.length ; i++) {
-    var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
-    treeHtml.classList.add("tree"+i);
-    treesDiv.append(treeHtml);
+    if (ws.trees[i].rootNode != null) {
+      var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
+      treeHtml.classList.add("tree"+i);
+      treesDiv.append(treeHtml);
+    }
   }
   mainDiv.append(treesDiv);
 
