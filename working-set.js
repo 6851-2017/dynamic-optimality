@@ -1071,6 +1071,23 @@ class WorkingSetStructure {
   }
 }
 
+/** Test that was failing for Smriti */
+var workingSet = new WorkingSetStructure();
+workingSet.insert(1);
+workingSet.insert(2);
+workingSet.insert(3);
+workingSet.insert(4);
+workingSet.insert(5);
+workingSet.insert(6);
+workingSet.insert(7);
+workingSet.insert(8);
+workingSet.insert(9);
+workingSet.insert(10);
+workingSet.search(1);
+console.log(workingSet.trees);
+console.log(workingSet.deques);
+
+
 /** Test for deleting and searching using pointerToDequeNode  
 var workingSet = new WorkingSetStructure();
 workingSet.insert(1);
@@ -1084,6 +1101,8 @@ console.log(workingSet.deques[0].toString());
 console.log(workingSet.trees[0].rootNode.pointerToDequeNode == workingSet.deques[0].first)
 console.log(workingSet.trees[0].rootNode.rightChild.pointerToDequeNode == workingSet.deques[0].last)
 */
+
+
 
 /*
 var workingSet = new WorkingSetStructure();
