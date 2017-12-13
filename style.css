@@ -19,11 +19,38 @@ body {
     padding: 8;
 }
 
+.tree{
+    width: fit-content;
+    display: inline-block;
+    margin: 10px;
+}
+
+.container{
+    float: left;
+}
+
+#status {
+    display: inline-block;
+}
+
+#statusContainer {
+    padding: 10px;
+    margin: 20px;
+    background-color: #def4fe;
+    border-radius: 10px;
+    width: fit-content;
+}
+
 .deque {
   padding: 20px;
+  padding-right: 60px;
+  width: fit-content;
+  display: inline-block;
 }
 
 .dequeNode, .headNode {
+  font-size: 11px;
+  color: #666;
   -webkit-transition: all 0.5s;
   padding: 10px;
   padding-top: 5px;
@@ -36,14 +63,15 @@ body {
 }
 
 .headNode {
-  background-color: #ccc;
+  background-color: #e3e3e3;
 }
 
+/*
 .dequeNode:hover {
   -webkit-transition: all 0.5s;
   background-color: #c8e4f8;
 }
-
+*/
 .tree ul {
     padding-top: 20px; position: relative;
     
@@ -117,17 +145,19 @@ body {
     -webkit-transition: all 0.5s;
     -moz-transition: all 0.5s;
 }
+/*
 .tree li div:hover, .tree li div:hover+ul li div {
     background: #c8e4f8; color: #000; border: 1px solid #94a0b4;
 }
+
 .tree li div:hover+ul li::after, 
 .tree li div:hover+ul li::before, 
 .tree li div:hover+ul::before, 
 .tree li div:hover+ul ul::before{
     border-color:  #94a0b4;
 }
-
+*/
 
 .null-elt {
-    background-color: gray;
+    background-color: #e3e3e3;
 }

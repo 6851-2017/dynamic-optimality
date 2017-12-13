@@ -18,7 +18,6 @@ jQuery.fn.insertAt = function(index, element) {
 }
 
 $(document).ready(function() {
-
   // Draw example AVL tree.
   /*
   var rootNodeDemo = new AvlNode(10);
@@ -54,12 +53,31 @@ $(document).ready(function() {
     if (userInput) {
       console.log("Inserting", userInput)
       workingSet.insert(userInput);
-
-
-      var workingSetHtml = getWorkingSetHtml(workingSet);
-      // Reset HTML
-      container.html(workingSetHtml);
+      var workingSetHtml;
+      //wait till animation done!!!!!
+      function checkInsertFlag() {
+        if(insertDone() == false) {
+          console.log("no");
+          window.setTimeout(checkInsertFlag, 100); /* this checks the flag every 100 milliseconds*/
+        } else {
+          $("#status").text("idle");
+          workingSetHtml = getWorkingSetHtml(workingSet)
+          container.html(workingSetHtml);
+          // setTimeout(function() {
+          //   workingSetHtml = getWorkingSetHtml(workingSet)
+          //   container.html(workingSetHtml);
+          // }, 100);
+        }
+      }
+      checkInsertFlag();
     }
+      // Reset HTML
+      // container.delay(2000)
+      //          .queue(function(n) {
+      //             workingSetHtml = getWorkingSetHtml(workingSet)
+      //             container.html(workingSetHtml);
+      //             n();
+      //          });
   });
 
   // Delete operation.
@@ -90,13 +108,25 @@ $(document).ready(function() {
         var newParent = $($('#deques').children()[0]);
         animateDequeSearch(dequeElement, newParent);
 
-        //var workingSetHtml = getWorkingSetHtml(workingSet);
+        // var workingSetHtml = getWorkingSetHtml(workingSet);
         // Reset HTML
-        //container.html(workingSetHtml);
+        // container.html(workingSetHtml);
       }
     }
   });
+
 });
+
+$(document).on("mouseenter", ".node", function() {
+  var val = $(this).text();
+  $('.'+val).css("background-color", "#c8e4f8");
+});
+
+$(document).on("mouseleave", ".node", function() {
+  var val = $(this).text();
+  $('.'+val).css("background-color", "#fff");
+});
+
 
 /**
  * Moves element to front of deque and shifts all
@@ -264,7 +294,7 @@ function getDequeHtml(deque) {
   var currentNode = deque.first;
   while (currentNode) {
     var dequeNode = document.createElement('div');
-    dequeNode.classList.add('dequeNode');
+    dequeNode.classList.add('dequeNode', currentNode.value, 'node');
     dequeNode.setAttribute('id', 'deque-' + currentNode.value);
     dequeNode.appendChild(document.createTextNode(currentNode.value));
 
@@ -296,24 +326,27 @@ function getTreeHtml(rootNode) {
   var treeRoot = document.createElement('li');
   var rootValueDiv = document.createElement('div');
   rootValueDiv.appendChild(document.createTextNode(rootNode.value));
+  rootValueDiv.classList.add(rootNode.value, 'node', 'tree-'+rootNode.value);
   treeRoot.appendChild(rootValueDiv);
 
   // Add children
   var children = document.createElement('ul');
-  children.appendChild(getChildHtml(rootNode.leftChild));
-  children.appendChild(getChildHtml(rootNode.rightChild));
+  children.appendChild(getChildHtml(rootNode.leftChild, rootNode, true));
+  children.appendChild(getChildHtml(rootNode.rightChild, rootNode, false));
   treeRoot.appendChild(children);
 
   return treeRoot;
 }
 
-function getChildHtml(child) {
+function getChildHtml(child, parent, left) {
   if (child) {
     return getTreeHtml(child);
   } else {
+    parentVal = parent.value;
+    whichChild = left == true ? "left-child" : "right-child";
     var childNull = document.createElement('li');
     var childNullDiv = document.createElement('div');
-    childNullDiv.classList.add('null-elt');
+    childNullDiv.classList.add('null-elt', whichChild, 'parent-'+parentVal);
     childNullDiv.appendChild(document.createTextNode('null'));
     childNull.appendChild(childNullDiv);
     return childNull;
@@ -356,6 +389,7 @@ function getWorkingSetHtml(ws) {
   treesDiv.setAttribute('id', 'trees');
   for (var i = 0; i < ws.trees.length ; i++) {
     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
+    treeHtml.classList.add("tree"+i);
     treesDiv.append(treeHtml);
   }
   mainDiv.append(treesDiv);
