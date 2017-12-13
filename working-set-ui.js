@@ -877,20 +877,16 @@ class WorkingSetStructure {
         var itemVal = item.value;
         setTimeout(function() {
           thisSet.trees[iCopy].delete(itemVal);
-          //console.log((iCopy+1)+" "+(jCopy+1));
           thisSet.trees[iCopy + 1].insert(itemVal);
           function checkInsertDone() {
             if(justInsertDone() == false) {
-              console.log("no (line 880, ws)");
+              console.log("no (line 883, ws)");
               window.setTimeout(checkInsertDone, 100); /* this checks the flag every 100 milliseconds*/
             } else {
               shiftComplete = true;
             }
           }
           checkInsertDone();
-          // setTimeout(function() {
-          //   shiftComplete = true;
-          // }, 500);
         }, 500);
       }
     } else if (j < h) {
@@ -922,13 +918,22 @@ class WorkingSetStructure {
         var itemVal = item.value;
         setTimeout(function() {
           thisSet.trees[iCopy].delete(itemVal);
-          thisSet.trees[iCopy - 1].insert(itemVal, i, h + 1);
+          thisSet.trees[iCopy - 1].insert(itemVal, iCopy, h + 1);
           setTimeout(function() {
-            shiftComplete = true;
+            function checkInsertDone() {
+              if(justInsertDone() == false) {
+                console.log("no (line 925, ws)");
+                window.setTimeout(checkInsertDone, 100); /* this checks the flag every 100 milliseconds*/
+              } else {
+                shiftComplete = true;
+              }
+            }
+            checkInsertDone();
           }, 500);
         }, 500);
       }
     } else {
+      console.log("shifting x to x");
       setTimeout(function() {
         shiftComplete = true;
       }, 10);
@@ -993,39 +998,90 @@ class WorkingSetStructure {
   /**
    * Delete value from the structure.
    */
-  delete(value) {
+  deleteFind(value) {
     var foundIndex = null;
     for (var i = 0; i < this.trees.length; i++) {
       var tree = this.trees[i];
       var exists = tree.search(value);
       if (exists != null) {
-        $("#operation").text("delete ["+value+"]");
-        $("#status").text("deleting ["+value+"] from tree "+i);
         tree.delete(value);
         foundIndex = i;
         this.deques[i].findAndPop(value);
         break;
       }
     }
-    if (foundIndex != null) {
-      var thisStructure = this;
-      function checkDeleteFlag() {
-        if(deleteDone() == false) {
-          window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
+    return foundIndex;
+  }
+
+  deleteFinish(value, j) {
+    console.log("from deleteFinish");
+    console.log(this);
+    console.log("LAST TREE SIZE "+this.trees[this.trees.length - 1].size());
+    if (this.trees.length == 0 || this.trees[this.trees.length - 1].size() == 0) {
+      // last one empty, so remove it
+      this.trees.pop();
+      this.deques.pop();
+    } else {
+      this.shift(this.deques.length - 1, j);
+      if (this.trees[this.trees.length - 1].size() == 0) {
+        // We emptied the last one, so remove it
+        this.trees.pop();
+        this.deques.pop();
+      }
+    }
+  }
+
+  /**
+   * Delete value from the structure.
+   */
+  deleteAnimate(value, index) {
+    // this.searchAnimate(value);
+    // var thisStructure = this;
+    // function checkSearchFlag() {
+    //   if (searchDone() == false) {
+    //     window.setTimeout(checkSearchFlag, 100);
+    //   } else {
+    //     $("."+value).text("");
+    //   }
+    // }
+    deleteComplete = false;
+    $("."+value).text(" ");
+    $("."+value).css("background-color", "red");
+    var thisStructure = this;
+    setTimeout(function () {
+      var container = $(".container");
+      console.log("-----");
+      console.log(thisStructure);
+      console.log("-----");
+      var workingSetHtml = getWorkingSetHtml(thisStructure);
+      container.html(workingSetHtml);
+      console.log("re rendered FROM DELETE ANIMATE");
+      setTimeout(function(){
+        // THEN:
+        console.log('SHIFTING FROM DELETE ANIMATE');
+        console.log(thisStructure.deques.length - 1+" "+ index)
+        thisStructure.shift(thisStructure.deques.length - 1, index);
+      }, 500);
+      // thisStructure.shift(thisStructure.deques.length - 1, foundIndex);
+      function checkShiftFlag() {
+        if (shiftDone() == false) {
+          window.setTimeout(checkShiftFlag, 100);
         } else {
-          thisStructure.shift(thisStructure.deques.length - 1, foundIndex);
           if (thisStructure.trees[thisStructure.trees.length - 1].size() == 0) {
             // We emptied the last one, so remove it
             thisStructure.trees.pop();
             thisStructure.deques.pop();
           }
-          return true;
+          setTimeout(function() {
+            deleteComplete = true;
+          }, 800);
         }
       }
-      checkDeleteFlag();
-    } else {
-      return false;
-    }
+      setTimeout(function () {
+        checkShiftFlag();
+      }, 510);
+    }, 500);
+
   }
 
   /**
@@ -1053,19 +1109,6 @@ class WorkingSetStructure {
       return j;
     }
 
-    // // Delete value from T_j
-    // this.trees[j].delete(value);
-    // this.deques[j].findAndPop(value);
-
-    // // Insert value into T_1
-    // this.trees[0].insert(value);
-    // this.deques[0].pushToFront(new DequeNode(value));
-
-    // // Shift 1 -> j
-    // this.shift(0, j);
-
-    // return node.value;
-
   }
 
   searchFinish(value, j) {
@@ -1077,6 +1120,13 @@ class WorkingSetStructure {
         if(deleteDone() == false) {
           window.setTimeout(checkDeleteFlag, 100); /* this checks the flag every 100 milliseconds*/
         } else {
+          $(".null-elt").each(function() {
+            $(this).css("background-color", "#e3e3e3");
+          });
+
+          $(".node").each(function() {
+            $(this).css("background-color", "#fff");
+          })
           thisStructure.trees[0].insert(value);
         }
       }
@@ -1146,25 +1196,3 @@ class WorkingSetStructure {
 
 }
 
-// function getWorkingSetHtml(ws) {
-//   var mainDiv = document.createElement('div');
-
-//   var dequesDiv = document.createElement('div');
-//   dequesDiv.setAttribute('id', 'deques');
-//   for (var i = 0; i < ws.deques.length ; i++) {
-//     var dequeHtml = getDequeHtml(ws.deques[i]);
-//     dequesDiv.append(dequeHtml);
-//   }
-//   mainDiv.append(dequesDiv);
-
-//   var treesDiv = document.createElement('div');
-//   treesDiv.setAttribute('id', 'trees');
-//   for (var i = 0; i < ws.trees.length ; i++) {
-//     var treeHtml = getTreeHtmlOverall(ws.trees[i].rootNode);
-//     treeHtml.classList.add("tree"+i);
-//     treesDiv.append(treeHtml);
-//   }
-//   mainDiv.append(treesDiv);
-
-//   return mainDiv;
-// }

@@ -76,9 +76,12 @@ $(document).ready(function() {
   $('#delete').click(function() {
     if (userInput) {
       console.log("Deleting", userInput)
-      var del = workingSet.delete(userInput);
-      if (del) {
-        //var workingSetHtml = getWorkingSetHtml(workingSet);
+      var prevSize = workingSet.trees.length;
+      var del = workingSet.deleteFind(userInput);
+      if (del != null) {
+        $("#operation").text("delete ["+userInput+"]");
+        $("#status").text("deleting ["+userInput+"] from tree "+del);
+        workingSet.deleteAnimate(userInput, del);
         function checkDeleteFlag() {
           if(deleteDone() == false) {
             console.log("no (delete)");
@@ -86,14 +89,31 @@ $(document).ready(function() {
           } else {
             $("#operation").text("none");
             $("#status").text("idle");
-            workingSetHtml = getWorkingSetHtml(workingSet)
-            container.html(workingSetHtml);
+            var sizeNow = workingSet.trees.length;
+            if (sizeNow == prevSize){
+              workingSet.deleteFinish(userInput, del);
+              function checkShiftFinished() {
+                if (shiftDone() == false) {
+                  console.log('SHIFT NOT DONE!!!!!!!!!');
+                  window.setTimeout(checkShiftFinished, 100)
+                } else {
+                  $("#operation").text("none");
+                  $("#status").text("idle");
+                  console.log("FINAL RE RENDER");
+                  workingSetHtml = getWorkingSetHtml(workingSet)
+                  container.html(workingSetHtml);
+                }
+              }
+              setTimeout(function () {
+                checkShiftFinished();
+              }, 510);
+            }
           }
         }
         checkDeleteFlag();
         // Reset HTML
         //container.html(workingSetHtml);
-      } else if (!del) {
+      } else {
         var helpText = "Could not delete " + userInput + " because it is not in the working set structure.";
         alert(helpText);
       }
@@ -256,7 +276,7 @@ function animateDequePushToFront(element, deque, shiftEverything) {
     'left': element.offset().left - elementMarginLeft,
     'top': element.offset().top - elementMarginTop,
     'z-index': 2000,
-    'background': 'green',
+    'background': '#defee2',
     'visibility': 'visible'
   });
 
