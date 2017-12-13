@@ -1,5 +1,5 @@
 /**
- * Data structures to compare with: BST, AVL tree, Hash Table, Cache (LRU), Splay Tree
+ * Data structures to compare: Linked List, BST, AVL tree, Hash Table, Splay Tree, Working Set
  * Interface/API that must be shared by all structures:
  * insert(value) --> void
  * delete(value) --> false, or void
@@ -360,6 +360,25 @@ class Deque {
         }
         total += ']';
         return total;
+    }
+
+    // Functions just for performance testing purposes (insert, search):
+    // Note: We are using implementation of deque for doubly-linked list.
+
+    insert(value) {
+        var node = new DequeNode(value);
+        this.pushToBack(node);
+    }
+
+    search(value) {
+        var currentNode = this.first;
+        while (currentNode) {
+            if (currentNode.value == value) {
+                return currentNode;
+            }
+            currentNode = currentNode.next;
+        }
+        return null;
     }
 }
 
@@ -1018,9 +1037,9 @@ class WorkingSetStructure {
     }
 
     /**
-   * Search for value in the structure and returns that value.
-   * Returns null if the value isn't in the structure.
-   */
+     * Search for value in the structure and returns that value.
+     * Returns null if the value isn't in the structure.
+     */
     search(value) {
 
         // Go through trees and search for value
@@ -1056,7 +1075,6 @@ class WorkingSetStructure {
 
         return node.value;
     }
-
 }
 
 /**
@@ -1070,7 +1088,6 @@ var HashTable = function () {
     this._count = 0;
     this._limit = 8;
 }
-
 
 HashTable.prototype.insert = function (key) {
     var value = key
@@ -1117,7 +1134,6 @@ HashTable.prototype.insert = function (key) {
     return this;
 };
 
-
 HashTable.prototype.delete = function (key) {
     var index = this.hashFunc(key, this._limit);
     var bucket = this._storage[index];
@@ -1140,8 +1156,6 @@ HashTable.prototype.delete = function (key) {
     }
 };
 
-
-
 HashTable.prototype.search = function (key) {
     var index = this.hashFunc(key, this._limit);
     var bucket = this._storage[index];
@@ -1160,7 +1174,6 @@ HashTable.prototype.search = function (key) {
     return false;
 };
 
-
 HashTable.prototype.hashFunc = function (str, max) {
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
@@ -1170,7 +1183,6 @@ HashTable.prototype.hashFunc = function (str, max) {
     }
     return hash;
 };
-
 
 HashTable.prototype.resize = function (newLimit) {
     var oldStorage = this._storage;
@@ -1190,153 +1202,10 @@ HashTable.prototype.resize = function (newLimit) {
     }.bind(this));
 };
 
-
 HashTable.prototype.retrieveAll = function () {
     console.log(this._storage);
     //console.log(this._limit);
 };
-
-/**
- * Cache (LRU)
- * Adapted from: https://chrisrng.svbtle.com/lru-cache-in-javascript
- * For our use case, key = value (key is always equal to value).
- */
-
-/* Initialize LRU cache with default limit being 10 items */
-function lru(limit) {
-    this.size = 0;
-    (typeof limit == "number") ? this.limit = limit : this.limit = 10;
-    this.map = {};
-    this.head = null;
-    this.tail = null;
-}
-
-lru.prototype.lrunode = function(key, value) {
-    if (typeof key != "undefined" && key !== null) {
-        this.key = key;
-    }
-    if (typeof value != "undefined" && value !== null) {
-        this.value = value;
-    }
-    this.prev = null;
-    this.next = null;
-}
-
-lru.prototype.setHead = function(node) {
-    node.next = this.head;
-    node.prev = null;
-    if (this.head !== null) {
-        this.head.prev = node;
-    }
-    this.head = node;
-    if (this.tail === null) {
-        this.tail = node;
-    }
-    this.size++;
-    this.map[node.key] = node;
-}
-
-/* Change or add a new value in the cache
- * We overwrite the entry if it already exists
- */
-lru.prototype.insert = function(key) {
-    var value = key;
-    var node = new lru.prototype.lrunode(key, value);
-    if (this.map[key]) {
-        this.map[key].value = node.value;
-        this.delete(node.key);
-    } else {
-        if (this.size >= this.limit) {
-            delete this.map[this.tail.key];
-            this.size--;
-            this.tail = this.tail.prev;
-            this.tail.next = null;
-        }
-    }
-    this.setHead(node);
-};
-
-/* Retrieve a single entry from the cache */
-lru.prototype.search = function(key) {
-    if (this.map[key]) {
-        var value = this.map[key].value;
-        var node = new lru.prototype.lrunode(key, value);
-        this.delete(key);
-        this.setHead(node);
-        return value;
-    } else {
-        console.log("Key " + key + " does not exist in the cache.")
-    }
-};
-
-/* Remove a single entry from the cache */
-lru.prototype.delete = function(key) {
-    var node = this.map[key];
-    if (node.prev !== null) {
-        node.prev.next = node.next;
-    } else {
-        this.head = node.next;
-    }
-    if (node.next !== null) {
-        node.next.prev = node.prev;
-    } else {
-        this.tail = node.prev;
-    }
-    delete this.map[key];
-    this.size--;
-};
-
-/* Resets the entire cache - Argument limit is optional to be reset */
-lru.prototype.removeAll = function(limit) {
-    this.size = 0;
-    this.map = {};
-    this.head = null;
-    this.tail = null;
-    if (typeof limit == "number") {
-        this.limit = limit;
-    }
-};
-
-/* Traverse through the cache elements using a callback function
- * Returns args [node element, element number, cache instance] for the callback function to use
- */
-lru.prototype.forEach = function(callback) {
-    var node = this.head;
-    var i = 0;
-    while (node) {
-        callback.apply(this, [node, i, this]);
-        i++;
-        node = node.next;
-    }
-}
-
-/* Returns a JSON representation of the cache */
-lru.prototype.toJSON = function() {
-    var json = []
-    var node = this.head;
-    while (node) {
-        json.push({
-            key : node.key, 
-            value : node.value
-        });
-        node = node.next;
-    }
-    return json;
-}
-
-/* Returns a String representation of the cache */
-lru.prototype.toString = function() {
-    var s = '';
-    var node = this.head;
-    while (node) {
-        s += String(node.key)+':'+node.value;
-        node = node.next;
-        if (node) {
-            s += '\n';
-        }
-    }
-    return s;
-}
 
 /**
  * Splay Tree
@@ -1577,18 +1446,15 @@ SplayBst.prototype.splay = function (k) {
 * Performance comparisons
 */
 
-// TODO: Find implementation of cache that includes memory simulation?
-// Work around for now: limit of cache is n... which somewhat defeats the purpose of a cache.
-
-// The data structures we want to compare performance with:
-var test_structures = ["BST", "AVL", "HashTable", "Cache", "Splay"];
+// The data structures we want to compare performances of:
+var test_structures = ["LinkedList", "BST", "AVL", "HashTable", "Splay", "WorkingSet"];
 
 // measures is a dictionary where key is data structure and values are op times
 // example entry: "BST" : [[50ms, 80ms], [20ms, 30ms], ...]
-var measures1 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
-var measures2 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
-var measures3 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
-var measures4 = { "BST": [], "AVL": [], "HashTable": [], "Cache": [], "Splay": [] };
+var measures1 = { "LinkedList": [], "BST": [], "AVL": [], "HashTable": [], "Splay": [], "WorkingSet": [] };
+var measures2 = { "LinkedList": [], "BST": [], "AVL": [], "HashTable": [], "Splay": [], "WorkingSet": [] };
+var measures3 = { "LinkedList": [], "BST": [], "AVL": [], "HashTable": [], "Splay": [], "WorkingSet": [] };
+var measures4 = { "LinkedList": [], "BST": [], "AVL": [], "HashTable": [], "Splay": [], "WorkingSet": [] };
 
 // using npm package for timing
 var now = require("performance-now")
@@ -1622,198 +1488,153 @@ function runTests(n) {
 
 // insert 1...n and then search 1...n, no repeats:
 function test1(structure, n) {
-    var workingSet = new WorkingSetStructure();
-    if (structure == "BST") {
+    if (structure == "LinkedList") {
+        // Using our implementation of deque as LL (only push to back when inserting)
+        var struct = new Deque();
+    } else if (structure == "BST") {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
-    } else if (structure == "Cache") {
-        var struct = new lru(n);
     } else if (structure == "Splay") {
         var struct = new SplayBst();
+    } else if (structure == "WorkingSet") {
+        var struct = new WorkingSetStructure();
     }
     // INSERT 1...N
-    // insert into working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.insert(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // insert into data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.insert(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures1[structure].push(["insert 1..." + n + " WS: " + wsTime, "insert 1..." + n + " " + structure + ": " + structTime]);
+    measures1[structure].push(["insert 1..." + n + " " + structure + ": " + structTime]);
 
     // SEARCH 1...N
-    // search working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.search(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // search data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.search(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures1[structure].push(["search 1..." + n + " WS: " + wsTime, "search 1..." + n + " " + structure + ": " + structTime]);
+    measures1[structure].push(["search 1..." + n + " " + structure + ": " + structTime]);
 }
 
 // insert 1...n and then search n...1, no repeats:
 function test2(structure, n) {
     var workingSet = new WorkingSetStructure();
-    if (structure == "BST") {
+    if (structure == "LinkedList") {
+        // Using our implementation of deque as LL (only push to back when inserting)
+        var struct = new Deque();
+    } else if (structure == "BST") {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
-    } else if (structure == "Cache") {
-        var struct = new lru(n);
     } else if (structure == "Splay") {
         var struct = new SplayBst();
+    } else if (structure == "WorkingSet") {
+        var struct = new WorkingSetStructure();
     }
     // INSERT 1...N
-    // insert into working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.insert(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // insert into data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.insert(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures2[structure].push(["insert 1..." + n + " WS: " + wsTime, "insert 1..." + n + " " + structure + ": " + structTime]);
+    measures2[structure].push(["insert 1..." + n + " " + structure + ": " + structTime]);
 
     // SEARCH N...1
-    // search working set
+    // search data structure
     var t0 = now();
-    for (var i = n; i <= 1; i--) {
-        workingSet.search(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
-    var t0 = now();
-    for (var i = n; i <= 1; i--) {
+    for (var i = n; i > 0; i--) {
         struct.search(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures2[structure].push(["search " + n + "...1 WS: " + wsTime, "search " + n + "...1 " + structure + ": " + structTime]);
+    measures2[structure].push(["search " + n + "...1 " + structure + ": " + structTime]);
 }
 
 // insert 1...n and then search 1 (n times):
 function test3(structure, n) {
     var workingSet = new WorkingSetStructure();
-    if (structure == "BST") {
+    if (structure == "LinkedList") {
+        // Using our implementation of deque as LL (only push to back when inserting)
+        var struct = new Deque();
+    } else if (structure == "BST") {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
-    } else if (structure == "Cache") {
-        var struct = new lru(n);
     } else if (structure == "Splay") {
         var struct = new SplayBst();
+    }  else if (structure == "WorkingSet") {
+        var struct = new WorkingSetStructure();
     }
     // INSERT 1...N
-    // insert into working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.insert(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // insert into data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.insert(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures3[structure].push(["insert 1..." + n + " WS: " + wsTime, "insert 1..." + n + " " + structure + ": " + structTime]);
+    measures3[structure].push(["insert 1..." + n + " " + structure + ": " + structTime]);
 
     // SEARCH 1
-    // search working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.search(1);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // search data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.search(1);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures3[structure].push(["search 1 (" + n + " times) WS: " + wsTime, "search 1 (" + n + " times) " + structure + ": " + structTime]);
+    measures3[structure].push(["search 1 (" + n + " times) " + structure + ": " + structTime]);
 }
 
 // insert 1...n and then search n (n times):
 function test4(structure, n) {
     var workingSet = new WorkingSetStructure();
-    if (structure == "BST") {
+    if (structure == "LinkedList") {
+        // Using our implementation of deque as LL (only push to back when inserting)
+        var struct = new Deque();
+    } else if (structure == "BST") {
         var struct = new BinarySearchTree();
     } else if (structure == "AVL") {
         var struct = new AvlTree();
     } else if (structure == "HashTable") {
         var struct = new HashTable();
-    } else if (structure == "Cache") {
-        var struct = new lru(n);
     } else if (structure == "Splay") {
         var struct = new SplayBst();
+    }  else if (structure == "WorkingSet") {
+        var struct = new WorkingSetStructure();
     }
     // INSERT 1...N
-    // insert into working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.insert(i);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // insert into data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.insert(i);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures4[structure].push(["insert 1..." + n + " WS: " + wsTime, "insert 1..." + n + " " + structure + ": " + structTime]);
+    measures4[structure].push(["insert 1..." + n + " " + structure + ": " + structTime]);
 
     // SEARCH N
-    // search working set
-    var t0 = now();
-    for (var i = 1; i <= n; i++) {
-        workingSet.search(n);
-    }
-    var t1 = now();
-    var wsTime = (t1 - t0).toFixed(3)
-    // insert into other data structure
+    // search data structure
     var t0 = now();
     for (var i = 1; i <= n; i++) {
         struct.search(n);
     }
     var t1 = now();
     var structTime = (t1 - t0).toFixed(3)
-    measures4[structure].push(["search " + n + " (" + n + " times) WS: " + wsTime, "search " + n + " (" + n + " times) " + structure + ": " + structTime]);
+    measures4[structure].push(["search " + n + " (" + n + " times) " + structure + ": " + structTime]);
 }
 
 runTests(10000);
